@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: isaid-api
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: isaid-api
+    spec:
+      containers:
+        - name: isaid
+          image: 672604338600.dkr.ecr.us-east-1.amazonaws.com/isaid:latest
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
