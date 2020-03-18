@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
   name: isaid-api
 spec:
   selector:
@@ -13,7 +14,7 @@ spec:
         app: isaid-api
     spec:
       containers:
-        - name: isaid
+        - name: isaid-api
           image: 672604338600.dkr.ecr.us-east-1.amazonaws.com/isaid:latest
           ports:
             - containerPort: 8080
@@ -23,3 +24,15 @@ spec:
               port: 8080
             initialDelaySeconds: 30
             timeoutSeconds: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: isaid-api-load-balancer
+spec:
+  selector:
+    app: isaid-api
+  ports:
+    - protocol: TCP
+      port: 8080
+  type: LoadBalancer
