@@ -16,10 +16,10 @@ spec:
         - name: isaid
           image: 672604338600.dkr.ecr.us-east-1.amazonaws.com/isaid:latest
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           livenessProbe:
             httpGet:
-              path: /health
-              port: 80
+              path: /actuator/health
+              port: 8080
             initialDelaySeconds: 30
             timeoutSeconds: 1
