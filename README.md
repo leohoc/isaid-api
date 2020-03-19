@@ -1,6 +1,6 @@
 # ISAID-API
 
->> Development in progress
+> Development in progress
 
 ### Description
 
