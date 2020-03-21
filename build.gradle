@@ -22,6 +22,10 @@ dependencies {
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
 	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+
+	compile group: 'org.springframework.data', name: 'spring-data-releasetrain', version: '1.4.6.RELEASE'
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.749'
+	compile group: 'com.github.derjust', name: 'spring-data-dynamodb', version: '5.1.0'
 }
 
 test {

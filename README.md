@@ -14,6 +14,18 @@ Currently it provides the following resources:
 #### Install requirements
 
 - Java >= 11
+- Docker >= 19
+
+#### Run a local DynamoDB instance
+
+To download a DynamoDB image and run it locally:
+
+```bash
+
+docker pull amazon/dynamodb-local
+docker run -p 8000:8000 amazon/dynamodb-local
+
+```
 
 #### Run
 
