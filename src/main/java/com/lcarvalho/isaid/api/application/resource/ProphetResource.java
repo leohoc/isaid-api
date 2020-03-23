@@ -2,8 +2,6 @@ package com.lcarvalho.isaid.api.application.resource;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
