@@ -26,6 +26,9 @@ dependencies {
 	compile group: 'org.springframework.data', name: 'spring-data-releasetrain', version: '1.4.6.RELEASE'
 	compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.749'
 	compile group: 'com.github.derjust', name: 'spring-data-dynamodb', version: '5.1.0'
+
+	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.1'
 }
 
 test {

@@ -16,6 +16,9 @@ spec:
       containers:
         - name: isaid-api
           image: 672604338600.dkr.ecr.us-east-1.amazonaws.com/isaid:latest
+          env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: "homolog"
           ports:
             - containerPort: 8080
           livenessProbe:
