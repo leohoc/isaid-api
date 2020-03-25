@@ -1,31 +1,23 @@
 package com.lcarvalho.isaid.api.application.resource;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
-import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
+import com.lcarvalho.isaid.api.domain.service.ProphetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.util.UUID;
 
 @RestController
 public class ProphetResource {
 
-    private DynamoDBMapper dynamoDBMapper;
-
     @Autowired
-    private AmazonDynamoDB amazonDynamoDB;
-
-    @Autowired
-    ProphetRepository prophetRepository;
+    ProphetService prophetService;
 
     @GetMapping("/prophet/{login}")
     public Prophet getProphet(@PathVariable(value = "login") String login) {
-        return prophetRepository.findByLogin(login);
+        return prophetService.retrieveProphetBy(login);
     }
 
     @PostMapping("/prophet")
-    public Prophet insertProphet(@RequestBody String login) {
-        return prophetRepository.save(new Prophet(login, UUID.randomUUID().toString()));
+    public Prophet createProphet(@RequestBody String login) {
+        return prophetService.createProphet(login);
     }
 }
