@@ -2,7 +2,6 @@ package com.lcarvalho.isaid.api.domain.service;
 
 import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.security.InvalidParameterException;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProphetServiceTest {
@@ -35,7 +35,7 @@ class ProphetServiceTest {
         Prophet actualProphet = prophetService.createProphet(LOGIN);
 
         // Then
-        Assertions.assertEquals(expectedProphet, actualProphet);
+        assertEquals(expectedProphet, actualProphet);
     }
 
     @Test
@@ -45,7 +45,7 @@ class ProphetServiceTest {
         String login = null;
 
         // When Then
-        Assertions.assertThrows(
+        assertThrows(
                     InvalidParameterException.class,
                     () -> prophetService.createProphet(login));
     }
@@ -57,7 +57,7 @@ class ProphetServiceTest {
         String login = "";
 
         // When Then
-        Assertions.assertThrows(
+        assertThrows(
                 InvalidParameterException.class,
                 () -> prophetService.createProphet(login));
     }
@@ -72,7 +72,7 @@ class ProphetServiceTest {
         Prophet actualProphet = prophetService.retrieveProphetBy(LOGIN);
 
         // Then
-        Assertions.assertEquals(expectedProphet, actualProphet);
+        assertEquals(expectedProphet, actualProphet);
     }
 
     @Test
@@ -82,7 +82,7 @@ class ProphetServiceTest {
         String login = null;
 
         // When Then
-        Assertions.assertThrows(
+        assertThrows(
                 InvalidParameterException.class,
                 () -> prophetService.retrieveProphetBy(login));
     }
@@ -94,7 +94,7 @@ class ProphetServiceTest {
         String login = "";
 
         // When Then
-        Assertions.assertThrows(
+        assertThrows(
                 InvalidParameterException.class,
                 () -> prophetService.retrieveProphetBy(login));
     }
