@@ -18,22 +18,65 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+
+	// Junit + Mockito
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
-	testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+	testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
 
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
-	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+	// Swagger
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
-	compile group: 'org.springframework.data', name: 'spring-data-releasetrain', version: '1.4.6.RELEASE'
-	compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.749'
-	compile group: 'com.github.derjust', name: 'spring-data-dynamodb', version: '5.1.0'
+	// DynamoDB
+	implementation group: 'org.springframework.data', name: 'spring-data-releasetrain', version: '1.4.6.RELEASE'
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.749'
+	implementation group: 'com.github.derjust', name: 'spring-data-dynamodb', version: '5.1.0'
 
-	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
-	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.1'
+	// Log4J
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.1'
 }
 
 test {
 	useJUnitPlatform()
 }
+
+sourceSets {
+	acceptanceTest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
+}
+
+configurations {
+	acceptanceTestImplementation.extendsFrom implementation
+	acceptanceTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+dependencies {
+
+	acceptanceTestImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+
+	// Cucumber
+	acceptanceTestImplementation group: 'io.cucumber', name: 'cucumber-java', version: '5.5.0'
+	acceptanceTestImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '5.5.0'
+	acceptanceTestImplementation group: 'io.cucumber', name: 'cucumber-core', version: '5.5.0'
+	acceptanceTestImplementation group: 'io.cucumber', name: 'cucumber-spring', version: '5.5.0'
+}
+
+
+
+task acceptanceTest(type: Test) {
+	description = 'Runs acceptance tests.'
+	group = 'verification'
+
+	testClassesDirs = sourceSets.acceptanceTest.output.classesDirs
+	classpath += sourceSets.acceptanceTest.runtimeClasspath
+	shouldRunAfter test
+}
+
+check.dependsOn acceptanceTest
