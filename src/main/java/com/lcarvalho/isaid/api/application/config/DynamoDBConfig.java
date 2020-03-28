@@ -4,13 +4,16 @@ import com.amazonaws.auth.*;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.local.embedded.DynamoDBEmbedded;
 import com.google.common.annotations.VisibleForTesting;
+import com.lcarvalho.isaid.api.application.config.util.AwsDynamoDbLocalTestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.util.StringUtils;
 
 import java.security.InvalidParameterException;
@@ -36,6 +39,9 @@ public class DynamoDBConfig {
     @Value("${amazon.aws.iam-role}")
     private Boolean useAmazonIAMRole;
 
+    @Value("${amazon.aws.embeddedDynamoDB}")
+    private Boolean useEmbeddedDynamoDB;
+
     public DynamoDBConfig() {}
 
     @VisibleForTesting
@@ -59,6 +65,12 @@ public class DynamoDBConfig {
         LOGGER.info("amazonAWSSecretKey: " + amazonAWSSecretKey);
         LOGGER.info("amazonAWSRegion: " + amazonAWSRegion);
         LOGGER.info("useAmazonIAMRole: " + useAmazonIAMRole);
+        LOGGER.info("useEmbeddedDynamoDB: " + useEmbeddedDynamoDB);
+
+        if (useEmbeddedDynamoDB) {
+            AwsDynamoDbLocalTestUtils.initSqLite();
+            return DynamoDBEmbedded.create().amazonDynamoDB();
+        }
 
         AmazonDynamoDBClientBuilder builder = configDBClientBuilder();
         return builder.build();

@@ -1,10 +1,15 @@
 package com.lcarvalho.isaid.stepdefs;
 
+import com.lcarvalho.isaid.api.domain.model.Prophet;
+import com.lcarvalho.isaid.api.domain.service.ProphetService;
 import com.lcarvalho.isaid.config.SpringAcceptanceTest;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
@@ -12,18 +17,24 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
 
     private static Logger LOGGER = LogManager.getLogger();
 
-    @Given("^that exists a registered prophet with lskywalker as login and c25b1d8b-4246-408c-8521-937cf13a38be as prophetCode$")
-    public void createProphet() throws IOException {
-        LOGGER.info("createProhet");
+    @Autowired
+    private ProphetService prophetService;
+
+    private Prophet prophet;
+
+    @Given("that exists a registered prophet with {string} as login and {string} as prophetCode")
+    public void createProphet(String login, String prophetCode) throws IOException {
+        prophetService.createProphet(login, prophetCode);
     }
 
-    @When("^clients makes a GET request to /prophet/lskywalker$")
-    public void getProphet() {
-        LOGGER.info("getProhet");
+    @When("clients makes a GET request to Prophet resource passing {string} as login")
+    public void getProphet(String login) {
+        prophet = prophetService.retrieveProphetBy(login);
     }
 
-    @When("^the prophet lskywalker which code is c25b1d8b-4246-408c-8521-937cf13a38be will be returned$")
-    public void assertProphet() {
-        LOGGER.info("assertProhet");
+    @Then("the prophet {string} which code is {string} will be returned")
+    public void assertProphet(String login, String prophetCode) {
+        Assertions.assertEquals(login, prophet.getLogin());
+        Assertions.assertEquals(prophetCode, prophet.getProphetCode());
     }
 }

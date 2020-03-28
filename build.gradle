@@ -10,6 +10,10 @@ sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
+	maven {
+		name "DynamoDB Local Release Repository - US West (Oregon) Region"
+		url "https://s3-us-west-2.amazonaws.com/dynamodb-local/release"
+	}
 }
 
 dependencies {
@@ -37,6 +41,9 @@ dependencies {
 	// Log4J
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.1'
+
+	// Embedded DynamoDB
+	implementation group: 'com.amazonaws', name: 'DynamoDBLocal', version: '1.12.0'
 }
 
 test {
@@ -67,8 +74,6 @@ dependencies {
 	acceptanceTestImplementation group: 'io.cucumber', name: 'cucumber-core', version: '5.5.0'
 	acceptanceTestImplementation group: 'io.cucumber', name: 'cucumber-spring', version: '5.5.0'
 }
-
-
 
 task acceptanceTest(type: Test) {
 	description = 'Runs acceptance tests.'
