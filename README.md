@@ -16,26 +16,20 @@ Currently it provides the following resources:
 - Java >= 11
 - Docker >= 19
 
-#### Run a local DynamoDB instance
+#### Create a local DynamoDB instance
 
-To download a DynamoDB image and run it locally:
-
-```bash
-
-docker pull amazon/dynamodb-local
-docker run -p 8000:8000 amazon/dynamodb-local
-
-```
+The isaid-api uses DynamoDB to store its data.
+For development purposes, you can run a local instance in your machine, following the instructions of the [isaid-database-migration](https://github.com/leohoc/isaid-database-migration) project.
 
 #### Run
 
-This will run the application in development mode:
+Running the application in development mode:
 
 ```bash
 
 git clone https://github.com/leohoc/isaid-api
 cd isaid-api/
-./gradlew clean build test
+./gradlew clean build test acceptanceTest
 java -jar build/libs/*.jar
 
 ```
