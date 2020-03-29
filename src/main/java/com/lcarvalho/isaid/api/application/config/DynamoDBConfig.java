@@ -59,12 +59,12 @@ public class DynamoDBConfig {
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {
 
-        LOGGER.info("amazonDynamoDBEndpoint: " + amazonDynamoDBEndpoint);
-        LOGGER.info("amazonAWSAccessKey: " + amazonAWSAccessKey);
-        LOGGER.info("amazonAWSSecretKey: " + amazonAWSSecretKey);
-        LOGGER.info("amazonAWSRegion: " + amazonAWSRegion);
-        LOGGER.info("useAmazonIAMRole: " + useAmazonIAMRole);
-        LOGGER.info("useEmbeddedDynamoDB: " + useEmbeddedDynamoDB);
+        LOGGER.info("m=amazonDynamoDB, amazonDynamoDBEndpoint=" + amazonDynamoDBEndpoint);
+        LOGGER.info("m=amazonDynamoDB, amazonAWSAccessKey=" + amazonAWSAccessKey);
+        LOGGER.info("m=amazonDynamoDB, amazonAWSSecretKey=" + amazonAWSSecretKey);
+        LOGGER.info("m=amazonDynamoDB, amazonAWSRegion=" + amazonAWSRegion);
+        LOGGER.info("m=amazonDynamoDB, useAmazonIAMRole=" + useAmazonIAMRole);
+        LOGGER.info("m=amazonDynamoDB, useEmbeddedDynamoDB=" + useEmbeddedDynamoDB);
 
         if (useEmbeddedDynamoDB) {
             AwsDynamoDbLocalTestUtils.initSqLite();

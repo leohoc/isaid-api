@@ -6,21 +6,19 @@ import com.lcarvalho.isaid.config.SpringAcceptanceTest;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.IOException;
 
-public class ProphetResourceStepDefs extends SpringAcceptanceTest {
+import static org.junit.jupiter.api.Assertions.*;
 
-    private static Logger LOGGER = LogManager.getLogger();
+public class ProphetResourceStepDefs extends SpringAcceptanceTest {
 
     @Autowired
     private ProphetService prophetService;
 
-    private Prophet prophet;
+    private Prophet actualProphet;
+
+    private Exception throwedException;
 
     @Given("that exists a registered prophet with {string} as login and {string} as prophetCode")
     public void createProphet(String login, String prophetCode) throws IOException {
@@ -29,12 +27,42 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
 
     @When("clients makes a GET request to Prophet resource passing {string} as login")
     public void getProphet(String login) {
-        prophet = prophetService.retrieveProphetBy(login);
+        try {
+            actualProphet = prophetService.retrieveProphetBy(login);
+        } catch (Exception e) {
+            throwedException = e;
+        }
+    }
+
+    @When("clients makes a POST request with {string} as login")
+    public void createProphet(String login) {
+        try {
+            prophetService.createProphet(login);
+        } catch (Exception e) {
+            throwedException = e;
+        }
     }
 
     @Then("the prophet {string} which code is {string} will be returned")
-    public void assertProphet(String login, String prophetCode) {
-        Assertions.assertEquals(login, prophet.getLogin());
-        Assertions.assertEquals(prophetCode, prophet.getProphetCode());
+    public void assertProphet(String expectedLogin, String expectedProphetCode) {
+        assertEquals(expectedLogin, actualProphet.getLogin());
+        assertEquals(expectedProphetCode, actualProphet.getProphetCode());
+    }
+
+    @Then("no prophet should be returned")
+    public void assertNullProphet() {
+        assertNull(actualProphet);
+    }
+
+    @Then("a exception with the message {string} should be throwed")
+    public void assertException(String expectedExceptionMessage) {
+        assertEquals(expectedExceptionMessage, throwedException.getMessage());
+    }
+
+    @Then("a prophet with login equals to {string} should exist in the database")
+    public void verifyProphetInDatabase(String expectedLogin) {
+        Prophet expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
+        assertNotNull(expectedProphet);
+        assertEquals(expectedLogin, expectedProphet.getLogin());
     }
 }
