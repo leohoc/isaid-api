@@ -16,7 +16,7 @@ public class ProphetResource {
     @Autowired
     ProphetService prophetService;
 
-    @GetMapping("/prophet/{login}")
+    @GetMapping("/prophets/{login}")
     public ResponseEntity getProphet(@PathVariable(value = "login") String login) {
         try {
             Prophet prophet = prophetService.retrieveProphetBy(login);
@@ -29,7 +29,7 @@ public class ProphetResource {
         }
     }
 
-    @PostMapping("/prophet")
+    @PostMapping("/prophets")
     public ResponseEntity createProphet(@RequestBody String login) throws ProphetAlreadyExistsException {
         try {
             Prophet prophet = prophetService.createProphet(login);
