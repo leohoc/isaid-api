@@ -1,5 +1,7 @@
 package com.lcarvalho.isaid.stepdefs;
 
+import com.lcarvalho.isaid.api.application.resource.ProphetResource;
+import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.domain.service.ProphetService;
 import com.lcarvalho.isaid.config.SpringAcceptanceTest;
@@ -7,6 +9,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,9 +21,10 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
     @Autowired
     private ProphetService prophetService;
 
-    private Prophet actualProphet;
+    @Autowired
+    private ProphetResource prophetResource;
 
-    private Exception throwedException;
+    private ResponseEntity actualResponseEntity;
 
     @Given("that exists a registered prophet with {string} as login and {string} as prophetCode")
     public void createProphet(String login, String prophetCode) throws IOException {
@@ -27,36 +33,30 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
 
     @When("clients makes a GET request to Prophet resource passing {string} as login")
     public void getProphet(String login) {
-        try {
-            actualProphet = prophetService.retrieveProphetBy(login);
-        } catch (Exception e) {
-            throwedException = e;
-        }
+        actualResponseEntity = prophetResource.getProphet(login);
     }
 
     @When("clients makes a POST request with {string} as login")
-    public void createProphet(String login) {
-        try {
-            prophetService.createProphet(login);
-        } catch (Exception e) {
-            throwedException = e;
-        }
+    public void createProphet(String login) throws ProphetAlreadyExistsException {
+        actualResponseEntity = prophetResource.createProphet(login);
     }
 
-    @Then("the prophet {string} which code is {string} will be returned")
-    public void assertProphet(String expectedLogin, String expectedProphetCode) {
-        assertEquals(expectedLogin, actualProphet.getLogin());
-        assertEquals(expectedProphetCode, actualProphet.getProphetCode());
+    @Then("a {int} http response with a body containing a prophet with {string} as login and {string} as code will be returned")
+    public void assertGetProphetResponse(Integer expectedHttpStatus, String expectedLogin, String expectedProphetCode) {
+
+        ResponseEntity expectedResponseEntity = buildResponseEntity(
+                            HttpStatus.valueOf(expectedHttpStatus),
+                            new Prophet(expectedLogin, expectedProphetCode));
+
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
+        assertEquals(((Prophet)expectedResponseEntity.getBody()).getLogin(), ((Prophet)actualResponseEntity.getBody()).getLogin());
+        assertEquals(((Prophet)expectedResponseEntity.getBody()).getProphetCode(), ((Prophet)actualResponseEntity.getBody()).getProphetCode());
     }
 
-    @Then("no prophet should be returned")
-    public void assertNullProphet() {
-        assertNull(actualProphet);
-    }
-
-    @Then("a exception with the message {string} should be throwed")
-    public void assertException(String expectedExceptionMessage) {
-        assertEquals(expectedExceptionMessage, throwedException.getMessage());
+    @Then("a {int} http response will be returned")
+    public void assertHttpStatusResponse(Integer expectedHttpStatus) {
+        ResponseEntity expectedResponseEntity = buildResponseEntity(HttpStatus.valueOf(expectedHttpStatus), null);
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
     }
 
     @Then("a prophet with login equals to {string} should exist in the database")
@@ -64,5 +64,9 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
         Prophet expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
         assertNotNull(expectedProphet);
         assertEquals(expectedLogin, expectedProphet.getLogin());
+    }
+
+    private ResponseEntity buildResponseEntity(HttpStatus httpStatus, Prophet prophet) {
+        return new ResponseEntity(prophet, httpStatus);
     }
 }

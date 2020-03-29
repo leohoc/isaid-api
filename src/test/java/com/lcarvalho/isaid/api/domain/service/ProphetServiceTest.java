@@ -1,5 +1,6 @@
 package com.lcarvalho.isaid.api.domain.service;
 
+import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import org.junit.jupiter.api.Test;
@@ -25,10 +26,11 @@ class ProphetServiceTest {
     private ProphetService prophetService;
 
     @Test
-    public void testCreateProphet() {
+    public void testCreateProphet() throws ProphetAlreadyExistsException {
 
         // Given
         Prophet expectedProphet = buildProphet();
+        Mockito.when(prophetRepository.findByLogin(Mockito.any())).thenReturn(null);
         Mockito.when(prophetRepository.save(Mockito.any())).thenReturn(expectedProphet);
 
         // When
@@ -62,6 +64,19 @@ class ProphetServiceTest {
                 () -> prophetService.createProphet(login));
     }
 
+    @Test
+    public void testCreateAlreadyExistentProphet() {
+
+        // Given
+        Mockito.when(prophetRepository.findByLogin(Mockito.eq(LOGIN))).thenReturn(buildProphet());
+
+        // When Then
+        assertThrows(
+                ProphetAlreadyExistsException.class,
+                () -> prophetService.createProphet(LOGIN));
+    }
+
+    @Test
     public void testRetrieveProphet() {
 
         // Given

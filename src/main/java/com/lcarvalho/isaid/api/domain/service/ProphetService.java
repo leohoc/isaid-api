@@ -1,6 +1,7 @@
 package com.lcarvalho.isaid.api.domain.service;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,11 @@ public class ProphetService {
     @Autowired
     private ProphetRepository prophetRepository;
 
-    public Prophet createProphet(String login) {
+    public Prophet createProphet(String login) throws ProphetAlreadyExistsException {
         validate(login);
+        if (prophetRepository.findByLogin(login) != null) {
+            throw new ProphetAlreadyExistsException();
+        }
         return prophetRepository.save(new Prophet(login, UUID.randomUUID().toString()));
     }
 
