@@ -24,7 +24,7 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
     @Autowired
     private ProphetResource prophetResource;
 
-    private ResponseEntity actualResponseEntity;
+    private  ResponseEntity actualResponseEntity;
 
     @Given("that exists a registered prophet with {string} as login and {string} as prophetCode")
     public void createProphet(String login, String prophetCode) throws IOException {
@@ -53,17 +53,16 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
         assertEquals(((Prophet)expectedResponseEntity.getBody()).getProphetCode(), ((Prophet)actualResponseEntity.getBody()).getProphetCode());
     }
 
-    @Then("a {int} http response will be returned")
-    public void assertHttpStatusResponse(Integer expectedHttpStatus) {
-        ResponseEntity expectedResponseEntity = buildResponseEntity(HttpStatus.valueOf(expectedHttpStatus), null);
-        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
-    }
-
     @Then("a prophet with login equals to {string} should exist in the database")
     public void verifyProphetInDatabase(String expectedLogin) {
         Prophet expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
         assertNotNull(expectedProphet);
         assertEquals(expectedLogin, expectedProphet.getLogin());
+    }
+
+    @Then("a {int} http response will be returned by the Prophet resource")
+    public void assertHttpStatusResponse(Integer expectedHttpStatus) {
+        assertEquals(HttpStatus.valueOf(expectedHttpStatus), actualResponseEntity.getStatusCode());
     }
 
     private ResponseEntity buildResponseEntity(HttpStatus httpStatus, Prophet prophet) {

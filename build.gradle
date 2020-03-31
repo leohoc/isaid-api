@@ -36,7 +36,10 @@ dependencies {
 	// DynamoDB
 	implementation group: 'org.springframework.data', name: 'spring-data-releasetrain', version: '1.4.6.RELEASE'
 	implementation group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.749'
-	implementation group: 'com.github.derjust', name: 'spring-data-dynamodb', version: '5.1.0'
+
+	// Using a fork of the original implementation due to the following issue: https://github.com/derjust/spring-data-dynamodb/issues/267
+	// implementation group: 'com.github.derjust', name: 'spring-data-dynamodb', version: '5.1.0'
+	implementation group: 'io.github.boostchicken', name: 'spring-data-dynamodb', version: '5.2.1'
 
 	// Log4J
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
