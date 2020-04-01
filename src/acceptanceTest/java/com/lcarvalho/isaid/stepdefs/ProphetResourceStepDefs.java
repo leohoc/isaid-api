@@ -1,6 +1,7 @@
 package com.lcarvalho.isaid.stepdefs;
 
 import com.lcarvalho.isaid.api.application.resource.ProphetResource;
+import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.domain.service.ProphetService;
@@ -27,7 +28,7 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
     private  ResponseEntity actualResponseEntity;
 
     @Given("that exists a registered prophet with {string} as login and {string} as prophetCode")
-    public void createProphet(String login, String prophetCode) throws IOException {
+    public void createProphet(String login, String prophetCode) throws IOException, InvalidParameterException {
         prophetService.createProphet(login, prophetCode);
     }
 
@@ -54,7 +55,7 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
     }
 
     @Then("a prophet with login equals to {string} should exist in the database")
-    public void verifyProphetInDatabase(String expectedLogin) {
+    public void verifyProphetInDatabase(String expectedLogin) throws InvalidParameterException {
         Prophet expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
         assertNotNull(expectedProphet);
         assertEquals(expectedLogin, expectedProphet.getLogin());

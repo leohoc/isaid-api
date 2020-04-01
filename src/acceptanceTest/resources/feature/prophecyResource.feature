@@ -12,9 +12,13 @@ Feature: Testing the Prophecy API
     Then a 404 http response will be returned by the Prophecy resource
 
   Scenario: Create a Prophecy with invalid Prophet login
-    When clients makes a POST request to "hsolo" prophecies with "" as summary and "There'll be all sort of strange behavior" as description
+    When clients makes a POST request to "" prophecies with "I bet misconfigured bots will try this" as summary and "There'll be all sort of strange behavior" as description
     Then a 400 http response will be returned by the Prophecy resource
 
   Scenario: Create a Prophecy with invalid summary
+    When clients makes a POST request to "hsolo" prophecies with "" as summary and "There'll be all sort of strange behavior" as description
+    Then a 400 http response will be returned by the Prophecy resource
+
+  Scenario: Create a Prophecy with invalid description
     When clients makes a POST request to "hsolo" prophecies with "I bet misconfigured bots will try this" as summary and "" as description
     Then a 400 http response will be returned by the Prophecy resource

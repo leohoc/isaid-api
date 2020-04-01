@@ -48,10 +48,10 @@ public class ProphecyService {
         if (StringUtils.isEmpty(prophetLogin)) {
             throw new InvalidParameterException(INVALID_LOGIN_EXCEPTION_MESSAGE);
         }
-        if (StringUtils.isEmpty(summary) && summary.length() < SUMMARY_MAXIMUM_LENGTH) {
+        if (StringUtils.isEmpty(summary) || summary.length() > SUMMARY_MAXIMUM_LENGTH) {
             throw new InvalidParameterException(INVALID_SUMMARY_EXCEPTION_MESSAGE);
         }
-        if (StringUtils.isEmpty(description) && description.length() < DESCRIPTION_MAXIMUM_LENGTH) {
+        if (StringUtils.isEmpty(description) || description.length() > DESCRIPTION_MAXIMUM_LENGTH) {
             throw new InvalidParameterException(INVALID_DESCRIPTION_EXCEPTION_MESSAGE);
         }
     }

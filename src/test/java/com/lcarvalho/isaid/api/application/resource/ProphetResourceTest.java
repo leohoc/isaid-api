@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class ProphetResourceTest {
 
-    private static final String LOGIN = "lcarvalho";
+    private static final String LOGIN = "lskywalker";
 
     @Mock
     private ProphetService prophetService;
