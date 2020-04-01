@@ -1,5 +1,6 @@
 package com.lcarvalho.isaid.api.application.resource;
 
+import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.domain.service.ProphetService;
@@ -7,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.InvalidParameterException;
 
 @RestController
 public class ProphetResource {
@@ -30,7 +29,7 @@ public class ProphetResource {
     }
 
     @PostMapping("/prophets")
-    public ResponseEntity createProphet(@RequestBody String login) throws ProphetAlreadyExistsException {
+    public ResponseEntity createProphet(@RequestBody String login) {
         try {
             Prophet prophet = prophetService.createProphet(login);
             return new ResponseEntity(prophet, HttpStatus.OK);

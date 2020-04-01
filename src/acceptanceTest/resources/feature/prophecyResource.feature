@@ -5,6 +5,7 @@ Feature: Testing the Prophecy API
     Given that exists a registered prophet with "lskywalker" as login and "c25b1d8b-4246-408c-8521-937cf13a38be" as prophetCode
     When clients makes a POST request to "lskywalker" prophecies with "Palpatine wasn't killed at Return of the Jedi" as summary and "He'll be back sooner than latter" as description
     Then a prophecy with "c25b1d8b-4246-408c-8521-937cf13a38be" as prophetCode, "Palpatine wasn't killed at Return of the Jedi" as summary and "He'll be back sooner than latter" as description should exist in the database
+    And a 200 http response will be returned by the Prophecy resource
 
   Scenario: Create a Prophecy of a nonexistent Prophet
     When clients makes a POST request to "hsolo" prophecies with "I bet misconfigured bots will try this" as summary and "There'll be all sort of strange behavior" as description

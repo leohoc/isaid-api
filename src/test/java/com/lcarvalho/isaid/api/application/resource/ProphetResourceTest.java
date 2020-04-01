@@ -1,5 +1,6 @@
 package com.lcarvalho.isaid.api.application.resource;
 
+import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.domain.service.ProphetService;
@@ -13,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.security.InvalidParameterException;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +30,7 @@ class ProphetResourceTest {
     private ProphetResource prophetResource;
 
     @Test
-    public void testGetProphet() {
+    public void testGetProphet() throws InvalidParameterException {
 
         // Given
         Prophet expectedProphet = buildProphet();
@@ -45,7 +45,7 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testGetProphetByInvalidLoginParameter() {
+    public void testGetProphetByInvalidLoginParameter() throws InvalidParameterException {
 
         // Given
         String login = null;
@@ -60,7 +60,7 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testGetProphetByInexistentLogin() {
+    public void testGetProphetByInexistentLogin() throws InvalidParameterException {
 
         // Given
         ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -74,7 +74,7 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testCreateProphet() throws ProphetAlreadyExistsException {
+    public void testCreateProphet() throws ProphetAlreadyExistsException, InvalidParameterException {
 
         // Given
         Prophet expectedProphet = buildProphet();
@@ -89,7 +89,7 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testCreateProphetWithInvalidLoginParameter() throws ProphetAlreadyExistsException {
+    public void testCreateProphetWithInvalidLoginParameter() throws ProphetAlreadyExistsException, InvalidParameterException {
 
         // Given
         String login = "";
@@ -104,7 +104,7 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testCreateAlreadyExistentProphet() throws ProphetAlreadyExistsException {
+    public void testCreateAlreadyExistentProphet() throws ProphetAlreadyExistsException, InvalidParameterException {
 
         // Given
         ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.CONFLICT);

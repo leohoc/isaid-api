@@ -1,5 +1,6 @@
 package com.lcarvalho.isaid.api.domain.service;
 
+import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.domain.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.api.domain.model.Prophecy;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.security.InvalidParameterException;
 import java.util.List;
 
 @Service
@@ -26,7 +26,7 @@ public class ProphecyService {
     @Autowired
     private ProphecyRepository prophecyRepository;
 
-    public Prophecy createProphecy(final String prophetLogin, final String summary, final String description) throws ProphetNotFoundException {
+    public Prophecy createProphecy(final String prophetLogin, final String summary, final String description) throws ProphetNotFoundException, InvalidParameterException {
 
         validate(prophetLogin, summary, description);
 
@@ -44,7 +44,7 @@ public class ProphecyService {
         return prophecyRepository.findByProphetCode(prophetCode);
     }
 
-    private void validate(String prophetLogin, String summary, String description) {
+    private void validate(String prophetLogin, String summary, String description) throws InvalidParameterException {
         if (StringUtils.isEmpty(prophetLogin)) {
             throw new InvalidParameterException(INVALID_LOGIN_EXCEPTION_MESSAGE);
         }

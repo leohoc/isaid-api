@@ -1,5 +1,6 @@
 package com.lcarvalho.isaid.api.domain.service;
 
+import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
@@ -10,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.security.InvalidParameterException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,7 +26,7 @@ class ProphetServiceTest {
     private ProphetService prophetService;
 
     @Test
-    public void testCreateProphet() throws ProphetAlreadyExistsException {
+    public void testCreateProphet() throws ProphetAlreadyExistsException, InvalidParameterException {
 
         // Given
         Prophet expectedProphet = buildProphet();
@@ -77,7 +77,7 @@ class ProphetServiceTest {
     }
 
     @Test
-    public void testRetrieveProphet() {
+    public void testRetrieveProphet() throws InvalidParameterException {
 
         // Given
         Prophet expectedProphet = buildProphet();

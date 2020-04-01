@@ -1,5 +1,6 @@
 package com.lcarvalho.isaid.api.application.resource;
 
+import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.domain.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.api.domain.model.Prophecy;
 import com.lcarvalho.isaid.api.domain.service.ProphecyService;
@@ -12,8 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.security.InvalidParameterException;
 
 @RestController
 public class ProphecyResource {
