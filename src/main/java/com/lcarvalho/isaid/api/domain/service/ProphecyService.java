@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -36,9 +37,19 @@ public class ProphecyService {
         return prophecyRepository.save(prophecy);
     }
 
-    public List<Prophecy> retrievePropheciesByProphetLogin(final String prophetLogin) throws InvalidParameterException, ProphetNotFoundException {
+    public List<Prophecy> retrievePropheciesBy(final String prophetLogin, final LocalDateTime startDateTime, final LocalDateTime endDateTime) throws InvalidParameterException, ProphetNotFoundException {
 
         Prophet prophet = retrieveProphet(prophetLogin);
+        if (startDateTime != null && endDateTime != null) {
+            return prophecyRepository.findByProphetCodeAndProphecyTimestampBetween(prophet.getProphetCode(), startDateTime, endDateTime);
+        }
+        if (startDateTime != null) {
+            return prophecyRepository.findByProphetCodeAndProphecyTimestampGreaterThan(prophet.getProphetCode(), startDateTime);
+        }
+        if (endDateTime != null) {
+            return prophecyRepository.findByProphetCodeAndProphecyTimestampLessThan(prophet.getProphetCode(), endDateTime);
+        }
+
         return prophecyRepository.findByProphetCode(prophet.getProphetCode());
     }
 
@@ -48,7 +59,7 @@ public class ProphecyService {
     }
 
     @VisibleForTesting
-    public List<Prophecy> retrievePropheciesByProphetCode(final String prophetCode) {
+    public List<Prophecy> retrievePropheciesBy(final String prophetCode) {
         return prophecyRepository.findByProphetCode(prophetCode);
     }
 

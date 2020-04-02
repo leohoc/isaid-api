@@ -44,13 +44,13 @@ public class ProphecyResourceStepDefs {
 
     @When("clients makes a GET request to {string} prophecies")
     public void clientsMakesAGETRequestToProphecies(String prophetLogin) {
-        actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin);
+        actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, null, null);
     }
 
     @Then("a prophecy with {string} as prophetCode, {string} as summary and {string} as description should exist in the database")
     public void assertProphecy(final String expectedProphetCode, final String expectedSummary, final String expectedDescription) {
 
-        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesByProphetCode(expectedProphetCode);
+        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(expectedProphetCode);
 
         if (actualProphecies != null && actualProphecies.size() > 0) {
 
