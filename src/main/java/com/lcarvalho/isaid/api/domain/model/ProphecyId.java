@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class ProphecyId {
 
@@ -47,5 +48,19 @@ public class ProphecyId {
         public LocalDateTime unconvert(final String stringValue) {
             return LocalDateTime.parse(stringValue);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProphecyId that = (ProphecyId) o;
+        return prophetCode.equals(that.prophetCode) &&
+                prophecyTimestamp.equals(that.prophecyTimestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prophetCode, prophecyTimestamp);
     }
 }

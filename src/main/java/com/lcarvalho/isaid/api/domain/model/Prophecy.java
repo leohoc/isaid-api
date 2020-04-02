@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @DynamoDBTable(tableName = "Prophecy")
 public class Prophecy {
@@ -21,6 +22,12 @@ public class Prophecy {
 
     public Prophecy(String prophetCode, String summary, String description) {
         this.prophecyId = new ProphecyId(prophetCode, LocalDateTime.now());
+        this.summary = summary;
+        this.description = description;
+    }
+
+    public Prophecy(String prophetCode, LocalDateTime prophecyTimestamp, String summary, String description) {
+        this.prophecyId = new ProphecyId(prophetCode, prophecyTimestamp);
         this.summary = summary;
         this.description = description;
     }
@@ -66,5 +73,20 @@ public class Prophecy {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Prophecy prophecy = (Prophecy) o;
+        return prophecyId.equals(prophecy.prophecyId) &&
+                summary.equals(prophecy.summary) &&
+                description.equals(prophecy.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prophecyId, summary, description);
     }
 }

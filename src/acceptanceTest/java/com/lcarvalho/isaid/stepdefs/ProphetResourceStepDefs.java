@@ -39,7 +39,7 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
 
     @When("clients makes a POST request with {string} as login")
     public void createProphet(String login) throws ProphetAlreadyExistsException {
-        actualResponseEntity = prophetResource.createProphet(login);
+        actualResponseEntity = prophetResource.createProphet(new Prophet(login, null));
     }
 
     @Then("a {int} http response with a body containing a prophet with {string} as login and {string} as code will be returned")

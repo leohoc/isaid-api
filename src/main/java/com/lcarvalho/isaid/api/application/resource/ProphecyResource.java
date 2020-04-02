@@ -9,10 +9,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class ProphecyResource {
@@ -22,18 +21,38 @@ public class ProphecyResource {
     @Autowired
     private ProphecyService prophecyService;
 
-    @PostMapping("/prophets/{login}/prophecies")
+    @PostMapping(value = "/prophets/{login}/prophecies", consumes = "application/json")
     public ResponseEntity createProphecy(@PathVariable(value = "login") String login,
-                                         @RequestBody String summary,
-                                         @RequestBody String description) throws ProphetNotFoundException {
+                                         @RequestBody Prophecy requestProphecy) {
 
-        LOGGER.info("m=createProphecy, login={}, summary={}, description={}", login, summary, description);
+        LOGGER.info("m=createProphecy, login={}, summary={}, description={}", login, requestProphecy.getSummary(), requestProphecy.getDescription());
 
         try {
-            Prophecy prophecy = prophecyService.createProphecy(login, summary, description);
+
+            Prophecy prophecy = prophecyService.createProphecy(login, requestProphecy.getSummary(), requestProphecy.getDescription());
             return new ResponseEntity(prophecy, HttpStatus.OK);
+
         } catch (InvalidParameterException e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+        } catch (ProphetNotFoundException e) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/prophets/{login}/prophecies")
+    public ResponseEntity getPropheciesBy(@PathVariable(value = "login") final String login) {
+
+        LOGGER.info("m=getPropheciesBy, login={}", login);
+
+        try {
+
+            List<Prophecy> prophecies = prophecyService.retrievePropheciesByProphetLogin(login);
+            return new ResponseEntity(prophecies, HttpStatus.OK);
+
+        } catch (InvalidParameterException e) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
         } catch (ProphetNotFoundException e) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }

@@ -1,5 +1,6 @@
 package com.lcarvalho.isaid.api.domain.service;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.domain.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.api.domain.model.Prophecy;
@@ -29,22 +30,29 @@ public class ProphecyService {
     public Prophecy createProphecy(final String prophetLogin, final String summary, final String description) throws ProphetNotFoundException, InvalidParameterException {
 
         validate(prophetLogin, summary, description);
-
-        Prophet prophet = prophetService.retrieveProphetBy(prophetLogin);
-
-        if (prophet == null) {
-            throw new ProphetNotFoundException();
-        }
+        Prophet prophet = retrieveProphet(prophetLogin);
 
         Prophecy prophecy = new Prophecy(prophet.getProphetCode(), summary, description);
         return prophecyRepository.save(prophecy);
     }
 
-    public List<Prophecy> retrievePropheciesBy(String prophetCode) {
+    public List<Prophecy> retrievePropheciesByProphetLogin(final String prophetLogin) throws InvalidParameterException, ProphetNotFoundException {
+
+        Prophet prophet = retrieveProphet(prophetLogin);
+        return prophecyRepository.findByProphetCode(prophet.getProphetCode());
+    }
+
+    @VisibleForTesting
+    public Prophecy createProphecy(final Prophecy prophecy) {
+        return prophecyRepository.save(prophecy);
+    }
+
+    @VisibleForTesting
+    public List<Prophecy> retrievePropheciesByProphetCode(final String prophetCode) {
         return prophecyRepository.findByProphetCode(prophetCode);
     }
 
-    private void validate(String prophetLogin, String summary, String description) throws InvalidParameterException {
+    private void validate(final String prophetLogin, final String summary, final String description) throws InvalidParameterException {
         if (StringUtils.isEmpty(prophetLogin)) {
             throw new InvalidParameterException(INVALID_LOGIN_EXCEPTION_MESSAGE);
         }
@@ -54,5 +62,13 @@ public class ProphecyService {
         if (StringUtils.isEmpty(description) || description.length() > DESCRIPTION_MAXIMUM_LENGTH) {
             throw new InvalidParameterException(INVALID_DESCRIPTION_EXCEPTION_MESSAGE);
         }
+    }
+
+    private Prophet retrieveProphet(String prophetLogin) throws InvalidParameterException, ProphetNotFoundException {
+        Prophet prophet = prophetService.retrieveProphetBy(prophetLogin);
+        if (prophet == null) {
+            throw new ProphetNotFoundException();
+        }
+        return prophet;
     }
 }

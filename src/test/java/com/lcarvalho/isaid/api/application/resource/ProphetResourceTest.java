@@ -82,7 +82,7 @@ class ProphetResourceTest {
         Mockito.when(prophetService.createProphet(Mockito.eq(LOGIN))).thenReturn(expectedProphet);
 
         // When
-        ResponseEntity actualResponseEntity = prophetResource.createProphet(LOGIN);
+        ResponseEntity actualResponseEntity = prophetResource.createProphet(new Prophet(LOGIN, null));
 
         // Then
         assertEquals(expectedResponseEntity, actualResponseEntity);
@@ -97,7 +97,7 @@ class ProphetResourceTest {
         Mockito.when(prophetService.createProphet(Mockito.eq(Strings.EMPTY))).thenThrow(new InvalidParameterException());
 
         // When
-        ResponseEntity actualResponseEntity = prophetResource.createProphet(login);
+        ResponseEntity actualResponseEntity = prophetResource.createProphet(new Prophet(login, null));
 
         // Then
         assertEquals(expectedResponseEntity, actualResponseEntity);
@@ -111,7 +111,7 @@ class ProphetResourceTest {
         Mockito.when(prophetService.createProphet(Mockito.eq(LOGIN))).thenThrow(new ProphetAlreadyExistsException());
 
         // When
-        ResponseEntity actualResponseEntity = prophetResource.createProphet(LOGIN);
+        ResponseEntity actualResponseEntity = prophetResource.createProphet(new Prophet(LOGIN, null));
 
         // Then
         assertEquals(expectedResponseEntity, actualResponseEntity);

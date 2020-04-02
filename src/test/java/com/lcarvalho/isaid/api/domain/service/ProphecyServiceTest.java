@@ -202,7 +202,7 @@ class ProphecyServiceTest {
         Mockito.when(prophecyRepository.findByProphetCode(Mockito.eq(PROPHET_CODE))).thenReturn(expectedProphecies);
 
         // When
-        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(PROPHET_CODE);
+        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesByProphetCode(PROPHET_CODE);
 
         // Then
         assertEquals(expectedProphecies.size(), actualProphecies.size());

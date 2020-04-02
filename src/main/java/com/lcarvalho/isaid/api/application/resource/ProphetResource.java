@@ -28,10 +28,10 @@ public class ProphetResource {
         }
     }
 
-    @PostMapping("/prophets")
-    public ResponseEntity createProphet(@RequestBody String login) {
+    @PostMapping(value = "/prophets", consumes = "application/json")
+    public ResponseEntity createProphet(@RequestBody Prophet requestProphet) {
         try {
-            Prophet prophet = prophetService.createProphet(login);
+            Prophet prophet = prophetService.createProphet(requestProphet.getLogin());
             return new ResponseEntity(prophet, HttpStatus.OK);
         } catch (InvalidParameterException e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);

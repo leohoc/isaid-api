@@ -40,7 +40,7 @@ class ProphecyResourceTest {
                         .thenReturn(expectedProphecy);
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, summary, description);
+        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new Prophecy(null, null, summary, description));
 
         // Then
         assertEquals(HttpStatus.OK, actualResponseEntity.getStatusCode());
@@ -62,7 +62,7 @@ class ProphecyResourceTest {
                 .thenThrow(new InvalidParameterException());
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, summary, description);
+        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new Prophecy(null, null, summary, description));
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, actualResponseEntity.getStatusCode());
@@ -82,7 +82,7 @@ class ProphecyResourceTest {
                 .thenThrow(new ProphetNotFoundException());
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, summary, description);
+        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new Prophecy(null, null, summary, description));
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, actualResponseEntity.getStatusCode());
