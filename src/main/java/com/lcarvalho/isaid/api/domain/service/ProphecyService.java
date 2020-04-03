@@ -40,6 +40,7 @@ public class ProphecyService {
     public List<Prophecy> retrievePropheciesBy(final String prophetLogin, final LocalDateTime startDateTime, final LocalDateTime endDateTime) throws InvalidParameterException, ProphetNotFoundException {
 
         Prophet prophet = retrieveProphet(prophetLogin);
+
         if (startDateTime != null && endDateTime != null) {
             return prophecyRepository.findByProphetCodeAndProphecyTimestampBetween(prophet.getProphetCode(), startDateTime, endDateTime);
         }

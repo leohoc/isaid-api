@@ -11,6 +11,7 @@ import io.cucumber.java.en.When;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -44,7 +45,26 @@ public class ProphecyResourceStepDefs {
 
     @When("clients makes a GET request to {string} prophecies")
     public void clientsMakesAGETRequestToProphecies(String prophetLogin) {
-        actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, null, null);
+        clientsMakesAGETRequestToProphecies(prophetLogin, null, null);
+    }
+
+    @When("clients makes a GET request to {string} prophecies filtering by prophecies latest than {string}")
+    public void clientsMakesAGETRequestToPropheciesLatestThanStartDateTime(String prophetLogin, String startDateTimeString) {
+        clientsMakesAGETRequestToProphecies(prophetLogin, startDateTimeString, null);
+    }
+
+    @When("clients makes a GET request to {string} prophecies filtering by prophecies older than {string}")
+    public void clientsMakesAGETRequestToPropheciesOldestThanEndDateTime(String prophetLogin, String endDateTimeString) {
+        clientsMakesAGETRequestToProphecies(prophetLogin, null, endDateTimeString);
+    }
+
+    @When("clients makes a GET request to {string} prophecies filtering by prophecies between {string} and {string}")
+    public void clientsMakesAGETRequestToProphecies(final String prophetLogin, final String startDateTimeString, final String endDateTimeString) {
+
+        LocalDateTime startDateTime = startDateTimeString == null ? null : LocalDateTime.parse(startDateTimeString);
+        LocalDateTime endDateTime = endDateTimeString == null ? null : LocalDateTime.parse(endDateTimeString);
+
+        actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, startDateTime, endDateTime);
     }
 
     @Then("a prophecy with {string} as prophetCode, {string} as summary and {string} as description should exist in the database")
@@ -74,9 +94,9 @@ public class ProphecyResourceStepDefs {
         assertTrue(actualProphecies.contains(expectedProphecy));
     }
 
-    @Then("a empty prophecy list should be returned in the response body")
-    public void assertResponseBodyEmptyProphecies() {
+    @Then("a prophecy list with {int} elements should be returned in the response body")
+    public void assertResponseBodyEmptyProphecies(final Integer expectedSize) {
         List<Prophecy> actualProphecies = (List<Prophecy>) actualResponseEntity.getBody();
-        assertTrue(actualProphecies.isEmpty());
+        assertEquals(expectedSize.intValue(), actualProphecies.size());
     }
 }
