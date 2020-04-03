@@ -7,13 +7,19 @@ import com.lcarvalho.isaid.api.domain.model.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphecyRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProphecyServiceTest {
@@ -43,12 +49,12 @@ class ProphecyServiceTest {
         Prophet prophet = buildProphet(prophetLogin);
         Prophecy expectedProphecy = buildProphecy(prophet.getProphetCode(), summary, description);
 
-        Mockito.when(prophetService.retrieveProphetBy(Mockito.eq(prophetLogin))).thenReturn(prophet);
-        Mockito.when(prophecyRepository.save(Mockito.any())).thenReturn(expectedProphecy);
+        when(prophetService.retrieveProphetBy(eq(prophetLogin))).thenReturn(prophet);
+        when(prophecyRepository.save(any())).thenReturn(expectedProphecy);
 
         // When
         Prophecy actualProphecy = prophecyService.createProphecy(prophetLogin, summary, description);
-        Mockito.verify(prophecyRepository).save(prophecyCaptor.capture());
+        verify(prophecyRepository).save(prophecyCaptor.capture());
 
         // Then
 
@@ -186,7 +192,7 @@ class ProphecyServiceTest {
         String prophetLogin = "as8das89da7sd9a";
         String summary = "Prophecy summary";
         String description = "Prophecy description";
-        Mockito.when(prophetService.retrieveProphetBy(Mockito.eq(prophetLogin))).thenReturn(null);
+        when(prophetService.retrieveProphetBy(eq(prophetLogin))).thenReturn(null);
 
         // When Then
         assertThrows(
@@ -195,20 +201,129 @@ class ProphecyServiceTest {
     }
 
     @Test
-    public void testRetrieveProphecies() {
+    public void testRetrieveAllPropheciesOfAProphet() throws InvalidParameterException, ProphetNotFoundException {
 
         // Given
+        Prophet prophet = buildProphet("wantilles");
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+
         List<Prophecy> expectedProphecies = buildProphecies(PROPHET_CODE);
-        Mockito.when(prophecyRepository.findByProphetCode(Mockito.eq(PROPHET_CODE))).thenReturn(expectedProphecies);
+        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
+        when(prophecyRepository.findByProphetCode(eq(prophet.getProphetCode()))).thenReturn(expectedProphecies);
 
         // When
-        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(PROPHET_CODE);
+        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
 
         // Then
         assertEquals(expectedProphecies.size(), actualProphecies.size());
         for (Prophecy expectedProphecy : expectedProphecies) {
             assertTrue(actualProphecies.contains(expectedProphecy));
         }
+    }
+
+    @Test
+    public void testRetrieveAllPropheciesOfAProphetWithinATimeRange() throws InvalidParameterException, ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet("wantilles");
+        LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
+        LocalDateTime endDateTime = startDateTime.plusDays(1);
+
+        List<Prophecy> expectedProphecies = buildProphecies(PROPHET_CODE);
+        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
+        when(prophecyRepository
+                .findByProphetCodeAndProphecyTimestampBetween(eq(prophet.getProphetCode()), eq(startDateTime), eq(endDateTime)))
+                .thenReturn(expectedProphecies);
+
+        // When
+        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
+
+        // Then
+        assertEquals(expectedProphecies.size(), actualProphecies.size());
+        for (Prophecy expectedProphecy : expectedProphecies) {
+            assertTrue(actualProphecies.contains(expectedProphecy));
+        }
+    }
+
+    @Test
+    public void testRetrieveAllPropheciesOfAProphetAfterASpecificTime() throws InvalidParameterException, ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet("wantilles");
+        LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
+        LocalDateTime endDateTime = null;
+
+        List<Prophecy> expectedProphecies = buildProphecies(PROPHET_CODE);
+        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
+        when(prophecyRepository
+                .findByProphetCodeAndProphecyTimestampGreaterThan(eq(prophet.getProphetCode()), eq(startDateTime)))
+                .thenReturn(expectedProphecies);
+
+        // When
+        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
+
+        // Then
+        assertEquals(expectedProphecies.size(), actualProphecies.size());
+        for (Prophecy expectedProphecy : expectedProphecies) {
+            assertTrue(actualProphecies.contains(expectedProphecy));
+        }
+    }
+
+    @Test
+    public void testRetrieveAllPropheciesOfAProphetBeforeASpecificTime() throws InvalidParameterException, ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet("wantilles");
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = LocalDate.now().atStartOfDay().plusDays(1);
+
+        List<Prophecy> expectedProphecies = buildProphecies(PROPHET_CODE);
+        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
+        when(prophecyRepository
+                .findByProphetCodeAndProphecyTimestampLessThan(eq(prophet.getProphetCode()), eq(endDateTime)))
+                .thenReturn(expectedProphecies);
+
+        // When
+        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
+
+        // Then
+        assertEquals(expectedProphecies.size(), actualProphecies.size());
+        for (Prophecy expectedProphecy : expectedProphecies) {
+            assertTrue(actualProphecies.contains(expectedProphecy));
+        }
+    }
+
+    @Test
+    public void testRetrieveAllPropheciesOfAProphetWithInvalidLogin() throws InvalidParameterException {
+
+        // Given
+        Prophet prophet = buildProphet("");
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+
+        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenThrow(new InvalidParameterException());
+
+        // When Then
+        assertThrows(
+                InvalidParameterException.class,
+                () -> prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime));
+    }
+
+    @Test
+    public void testRetrieveAllPropheciesOfANonexistentProphet() throws InvalidParameterException, ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet("sdkfsdf07sd89f7s");
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+
+        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(null);
+
+        // When Then
+        assertThrows(
+                ProphetNotFoundException.class,
+                () -> prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime));
     }
 
     private List<Prophecy> buildProphecies(String prophetCode) {
