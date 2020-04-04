@@ -1,10 +1,10 @@
-package com.lcarvalho.isaid.api.domain.service;
+package com.lcarvalho.isaid.api.service;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
-import com.lcarvalho.isaid.api.domain.exception.ProphetNotFoundException;
-import com.lcarvalho.isaid.api.domain.model.Prophecy;
-import com.lcarvalho.isaid.api.domain.model.Prophet;
+import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
+import com.lcarvalho.isaid.api.domain.entity.Prophecy;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphecyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

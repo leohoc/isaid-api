@@ -1,4 +1,4 @@
-package com.lcarvalho.isaid.api.domain.model;
+package com.lcarvalho.isaid.api.domain.entity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;

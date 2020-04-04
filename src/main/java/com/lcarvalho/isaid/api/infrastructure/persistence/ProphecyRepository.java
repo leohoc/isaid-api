@@ -1,7 +1,7 @@
 package com.lcarvalho.isaid.api.infrastructure.persistence;
 
-import com.lcarvalho.isaid.api.domain.model.Prophecy;
-import com.lcarvalho.isaid.api.domain.model.ProphecyId;
+import com.lcarvalho.isaid.api.domain.entity.Prophecy;
+import com.lcarvalho.isaid.api.domain.entity.ProphecyId;
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
 import org.springframework.data.repository.CrudRepository;
 

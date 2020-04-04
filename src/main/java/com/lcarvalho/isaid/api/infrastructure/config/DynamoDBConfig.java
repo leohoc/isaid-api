@@ -1,4 +1,4 @@
-package com.lcarvalho.isaid.api.application.config;
+package com.lcarvalho.isaid.api.infrastructure.config;
 
 import com.amazonaws.auth.*;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -6,7 +6,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.local.embedded.DynamoDBEmbedded;
 import com.google.common.annotations.VisibleForTesting;
-import com.lcarvalho.isaid.api.application.config.util.AwsDynamoDbLocalTestUtils;
+import com.lcarvalho.isaid.api.infrastructure.config.util.AwsDynamoDbLocalTestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;

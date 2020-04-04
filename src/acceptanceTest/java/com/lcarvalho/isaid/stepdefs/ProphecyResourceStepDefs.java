@@ -1,17 +1,15 @@
 package com.lcarvalho.isaid.stepdefs;
 
 import com.lcarvalho.isaid.api.application.resource.ProphecyResource;
-import com.lcarvalho.isaid.api.domain.exception.ProphetNotFoundException;
-import com.lcarvalho.isaid.api.domain.model.Prophecy;
-import com.lcarvalho.isaid.api.domain.service.ProphecyService;
-import io.cucumber.java.en.And;
+import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
+import com.lcarvalho.isaid.api.domain.entity.Prophecy;
+import com.lcarvalho.isaid.api.service.ProphecyService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

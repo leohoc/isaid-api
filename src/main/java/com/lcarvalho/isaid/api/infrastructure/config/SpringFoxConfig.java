@@ -1,4 +1,4 @@
-package com.lcarvalho.isaid.api.application.config;
+package com.lcarvalho.isaid.api.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

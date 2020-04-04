@@ -3,15 +3,13 @@ package com.lcarvalho.isaid.config;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.*;
-import com.lcarvalho.isaid.api.domain.model.Prophecy;
-import com.lcarvalho.isaid.api.domain.model.Prophet;
+import com.lcarvalho.isaid.api.domain.entity.Prophecy;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
-
-import java.util.List;
 
 @Component
 public class EmbeddedDynamoDBInitializer {

@@ -1,10 +1,10 @@
 package com.lcarvalho.isaid.stepdefs;
 
 import com.lcarvalho.isaid.api.application.resource.ProphetResource;
-import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
-import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
-import com.lcarvalho.isaid.api.domain.model.Prophet;
-import com.lcarvalho.isaid.api.domain.service.ProphetService;
+import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
+import com.lcarvalho.isaid.api.service.ProphetService;
 import com.lcarvalho.isaid.config.SpringAcceptanceTest;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

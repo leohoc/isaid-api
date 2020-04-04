@@ -1,4 +1,4 @@
-package com.lcarvalho.isaid.api.application.config.util;
+package com.lcarvalho.isaid.api.infrastructure.config.util;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;

@@ -1,9 +1,9 @@
 package com.lcarvalho.isaid.api.application.resource;
 
-import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
-import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
-import com.lcarvalho.isaid.api.domain.model.Prophet;
-import com.lcarvalho.isaid.api.domain.service.ProphetService;
+import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
+import com.lcarvalho.isaid.api.service.ProphetService;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,6 +1,6 @@
 package com.lcarvalho.isaid.api.infrastructure.persistence;
 
-import com.lcarvalho.isaid.api.domain.model.Prophet;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
 import org.springframework.data.repository.CrudRepository;
 

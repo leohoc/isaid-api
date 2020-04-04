@@ -1,9 +1,9 @@
-package com.lcarvalho.isaid.api.domain.service;
+package com.lcarvalho.isaid.api.service;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
-import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
-import com.lcarvalho.isaid.api.domain.model.Prophet;
+import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

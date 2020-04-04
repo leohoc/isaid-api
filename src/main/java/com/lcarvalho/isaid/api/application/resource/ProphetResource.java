@@ -1,9 +1,9 @@
 package com.lcarvalho.isaid.api.application.resource;
 
-import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
-import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
-import com.lcarvalho.isaid.api.domain.model.Prophet;
-import com.lcarvalho.isaid.api.domain.service.ProphetService;
+import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
+import com.lcarvalho.isaid.api.service.ProphetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,10 +1,10 @@
 package com.lcarvalho.isaid.api.application.resource;
 
-import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
-import com.lcarvalho.isaid.api.domain.exception.ProphetNotFoundException;
-import com.lcarvalho.isaid.api.domain.model.Prophecy;
-import com.lcarvalho.isaid.api.domain.model.Prophet;
-import com.lcarvalho.isaid.api.domain.service.ProphecyService;
+import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
+import com.lcarvalho.isaid.api.domain.entity.Prophecy;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
+import com.lcarvalho.isaid.api.service.ProphecyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

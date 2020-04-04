@@ -1,4 +1,4 @@
-package com.lcarvalho.isaid.api.domain.exception;
+package com.lcarvalho.isaid.api.service.exception;
 
 public class ProphetNotFoundException extends Exception {
 }

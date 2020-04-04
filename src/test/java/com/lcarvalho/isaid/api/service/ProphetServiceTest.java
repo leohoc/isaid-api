@@ -1,8 +1,8 @@
-package com.lcarvalho.isaid.api.domain.service;
+package com.lcarvalho.isaid.api.service;
 
-import com.lcarvalho.isaid.api.domain.exception.InvalidParameterException;
-import com.lcarvalho.isaid.api.domain.exception.ProphetAlreadyExistsException;
-import com.lcarvalho.isaid.api.domain.model.Prophet;
+import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
