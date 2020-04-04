@@ -1,9 +1,9 @@
 package com.lcarvalho.isaid.stepdefs;
 
 import com.lcarvalho.isaid.api.application.resource.ProphetResource;
+import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
-import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.service.ProphetService;
 import com.lcarvalho.isaid.config.SpringAcceptanceTest;
 import io.cucumber.java.en.Given;
@@ -39,7 +39,7 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
 
     @When("clients makes a POST request with {string} as login")
     public void createProphet(String login) throws ProphetAlreadyExistsException {
-        actualResponseEntity = prophetResource.createProphet(new Prophet(login, null));
+        actualResponseEntity = prophetResource.createProphet(new ProphetDTO(login));
     }
 
     @Then("a {int} http response with a body containing a prophet with {string} as login and {string} as code will be returned")
@@ -47,16 +47,16 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
 
         ResponseEntity expectedResponseEntity = buildResponseEntity(
                             HttpStatus.valueOf(expectedHttpStatus),
-                            new Prophet(expectedLogin, expectedProphetCode));
+                            new ProphetDTO(expectedLogin, expectedProphetCode));
 
         assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
-        assertEquals(((Prophet)expectedResponseEntity.getBody()).getLogin(), ((Prophet)actualResponseEntity.getBody()).getLogin());
-        assertEquals(((Prophet)expectedResponseEntity.getBody()).getProphetCode(), ((Prophet)actualResponseEntity.getBody()).getProphetCode());
+        assertEquals(((ProphetDTO)expectedResponseEntity.getBody()).getLogin(), ((ProphetDTO)actualResponseEntity.getBody()).getLogin());
+        assertEquals(((ProphetDTO)expectedResponseEntity.getBody()).getProphetCode(), ((ProphetDTO)actualResponseEntity.getBody()).getProphetCode());
     }
 
     @Then("a prophet with login equals to {string} should exist in the database")
     public void verifyProphetInDatabase(String expectedLogin) throws InvalidParameterException {
-        Prophet expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
+        ProphetDTO expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
         assertNotNull(expectedProphet);
         assertEquals(expectedLogin, expectedProphet.getLogin());
     }
@@ -66,7 +66,7 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
         assertEquals(HttpStatus.valueOf(expectedHttpStatus), actualResponseEntity.getStatusCode());
     }
 
-    private ResponseEntity buildResponseEntity(HttpStatus httpStatus, Prophet prophet) {
+    private ResponseEntity buildResponseEntity(HttpStatus httpStatus, ProphetDTO prophet) {
         return new ResponseEntity(prophet, httpStatus);
     }
 }

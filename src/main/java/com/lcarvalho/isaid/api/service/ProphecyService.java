@@ -1,6 +1,8 @@
 package com.lcarvalho.isaid.api.service;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.lcarvalho.isaid.api.domain.dto.ProphecyDTO;
+import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.api.domain.entity.Prophecy;
@@ -11,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProphecyService {
@@ -28,30 +32,34 @@ public class ProphecyService {
     @Autowired
     private ProphecyRepository prophecyRepository;
 
-    public Prophecy createProphecy(final String prophetLogin, final String summary, final String description) throws ProphetNotFoundException, InvalidParameterException {
+    public ProphecyDTO createProphecy(final String prophetLogin, final ProphecyDTO prophecyDTO) throws ProphetNotFoundException, InvalidParameterException {
 
-        validate(prophetLogin, summary, description);
-        Prophet prophet = retrieveProphet(prophetLogin);
+        validate(prophetLogin, prophecyDTO.getSummary(), prophecyDTO.getDescription());
+        ProphetDTO prophet = retrieveProphet(prophetLogin);
 
-        Prophecy prophecy = new Prophecy(prophet.getProphetCode(), summary, description);
-        return prophecyRepository.save(prophecy);
+        Prophecy prophecy = prophecyRepository.save(new Prophecy(prophet.getProphetCode(), prophecyDTO.getSummary(), prophecyDTO.getDescription()));
+        return new ProphecyDTO(prophecy);
     }
 
-    public List<Prophecy> retrievePropheciesBy(final String prophetLogin, final LocalDateTime startDateTime, final LocalDateTime endDateTime) throws InvalidParameterException, ProphetNotFoundException {
+    public List<ProphecyDTO> retrievePropheciesBy(final String prophetLogin, final LocalDateTime startDateTime, final LocalDateTime endDateTime) throws InvalidParameterException, ProphetNotFoundException {
 
-        Prophet prophet = retrieveProphet(prophetLogin);
+        ProphetDTO prophet = retrieveProphet(prophetLogin);
+        List<Prophecy> prophecies = new ArrayList<>();
 
         if (startDateTime != null && endDateTime != null) {
-            return prophecyRepository.findByProphetCodeAndProphecyTimestampBetween(prophet.getProphetCode(), startDateTime, endDateTime);
-        }
-        if (startDateTime != null) {
-            return prophecyRepository.findByProphetCodeAndProphecyTimestampGreaterThan(prophet.getProphetCode(), startDateTime);
-        }
-        if (endDateTime != null) {
-            return prophecyRepository.findByProphetCodeAndProphecyTimestampLessThan(prophet.getProphetCode(), endDateTime);
+            prophecies = prophecyRepository.findByProphetCodeAndProphecyTimestampBetween(prophet.getProphetCode(), startDateTime, endDateTime);
+
+        } else if (startDateTime != null) {
+            prophecies = prophecyRepository.findByProphetCodeAndProphecyTimestampGreaterThan(prophet.getProphetCode(), startDateTime);
+
+        } else if (endDateTime != null) {
+            prophecies = prophecyRepository.findByProphetCodeAndProphecyTimestampLessThan(prophet.getProphetCode(), endDateTime);
+
+        } else {
+            prophecies = prophecyRepository.findByProphetCode(prophet.getProphetCode());
         }
 
-        return prophecyRepository.findByProphetCode(prophet.getProphetCode());
+        return convertToProphecyDTOList(prophecies);
     }
 
     @VisibleForTesting
@@ -76,11 +84,15 @@ public class ProphecyService {
         }
     }
 
-    private Prophet retrieveProphet(String prophetLogin) throws InvalidParameterException, ProphetNotFoundException {
-        Prophet prophet = prophetService.retrieveProphetBy(prophetLogin);
+    private ProphetDTO retrieveProphet(String prophetLogin) throws InvalidParameterException, ProphetNotFoundException {
+        ProphetDTO prophet = prophetService.retrieveProphetBy(prophetLogin);
         if (prophet == null) {
             throw new ProphetNotFoundException();
         }
         return prophet;
+    }
+
+    private List<ProphecyDTO> convertToProphecyDTOList(List<Prophecy> prophecies) {
+        return prophecies.stream().map(ProphecyDTO::new).collect(Collectors.toList());
     }
 }

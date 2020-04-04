@@ -1,6 +1,7 @@
 package com.lcarvalho.isaid.api.service;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
@@ -19,12 +20,13 @@ public class ProphetService {
     @Autowired
     private ProphetRepository prophetRepository;
 
-    public Prophet createProphet(String login) throws ProphetAlreadyExistsException, InvalidParameterException {
+    public ProphetDTO createProphet(String login) throws ProphetAlreadyExistsException, InvalidParameterException {
         validate(login);
         if (prophetRepository.findByLogin(login) != null) {
             throw new ProphetAlreadyExistsException();
         }
-        return prophetRepository.save(new Prophet(login, UUID.randomUUID().toString()));
+        Prophet prophet = prophetRepository.save(new Prophet(login, UUID.randomUUID().toString()));
+        return new ProphetDTO(prophet);
     }
 
     @VisibleForTesting
@@ -33,9 +35,10 @@ public class ProphetService {
         return prophetRepository.save(new Prophet(login, prophetCode));
     }
 
-    public Prophet retrieveProphetBy(String login) throws InvalidParameterException {
+    public ProphetDTO retrieveProphetBy(String login) throws InvalidParameterException {
         validate(login);
-        return prophetRepository.findByLogin(login);
+        Prophet prophet = prophetRepository.findByLogin(login);
+        return prophet == null ? null : new ProphetDTO(prophet);
     }
 
     private void validate(String login) throws InvalidParameterException {

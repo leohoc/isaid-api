@@ -1,8 +1,8 @@
 package com.lcarvalho.isaid.api.application.resource;
 
+import com.lcarvalho.isaid.api.domain.dto.ProphecyDTO;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
-import com.lcarvalho.isaid.api.domain.entity.Prophecy;
 import com.lcarvalho.isaid.api.service.ProphecyService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,13 +25,13 @@ public class ProphecyResource {
 
     @PostMapping(value = "/prophets/{login}/prophecies", consumes = "application/json")
     public ResponseEntity createProphecy(@PathVariable("login") String login,
-                                         @RequestBody Prophecy requestProphecy) {
+                                         @RequestBody ProphecyDTO requestProphecy) {
 
         LOGGER.info("m=createProphecy, login={}, summary={}, description={}", login, requestProphecy.getSummary(), requestProphecy.getDescription());
 
         try {
 
-            Prophecy prophecy = prophecyService.createProphecy(login, requestProphecy.getSummary(), requestProphecy.getDescription());
+            ProphecyDTO prophecy = prophecyService.createProphecy(login, requestProphecy);
             return new ResponseEntity(prophecy, HttpStatus.OK);
 
         } catch (InvalidParameterException e) {
@@ -51,7 +51,7 @@ public class ProphecyResource {
 
         try {
 
-            List<Prophecy> prophecies = prophecyService.retrievePropheciesBy(login, startDateTime, endDateTime);
+            List<ProphecyDTO> prophecies = prophecyService.retrievePropheciesBy(login, startDateTime, endDateTime);
             return new ResponseEntity(prophecies, HttpStatus.OK);
 
         } catch (InvalidParameterException e) {

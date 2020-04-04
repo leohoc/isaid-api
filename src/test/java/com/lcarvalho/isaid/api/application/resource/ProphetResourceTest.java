@@ -1,8 +1,8 @@
 package com.lcarvalho.isaid.api.application.resource;
 
+import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
-import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.service.ProphetService;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class ProphetResourceTest {
     public void testGetProphet() throws InvalidParameterException {
 
         // Given
-        Prophet expectedProphet = buildProphet();
+        ProphetDTO expectedProphet = buildProphet();
         ResponseEntity expectedResponseEntity = new ResponseEntity(expectedProphet, HttpStatus.OK);
         Mockito.when(prophetService.retrieveProphetBy(Mockito.eq(LOGIN))).thenReturn(expectedProphet);
 
@@ -77,12 +77,12 @@ class ProphetResourceTest {
     public void testCreateProphet() throws ProphetAlreadyExistsException, InvalidParameterException {
 
         // Given
-        Prophet expectedProphet = buildProphet();
+        ProphetDTO expectedProphet = buildProphet();
         ResponseEntity expectedResponseEntity = new ResponseEntity(expectedProphet, HttpStatus.OK);
         Mockito.when(prophetService.createProphet(Mockito.eq(LOGIN))).thenReturn(expectedProphet);
 
         // When
-        ResponseEntity actualResponseEntity = prophetResource.createProphet(new Prophet(LOGIN, null));
+        ResponseEntity actualResponseEntity = prophetResource.createProphet(new ProphetDTO(LOGIN));
 
         // Then
         assertEquals(expectedResponseEntity, actualResponseEntity);
@@ -97,7 +97,7 @@ class ProphetResourceTest {
         Mockito.when(prophetService.createProphet(Mockito.eq(Strings.EMPTY))).thenThrow(new InvalidParameterException());
 
         // When
-        ResponseEntity actualResponseEntity = prophetResource.createProphet(new Prophet(login, null));
+        ResponseEntity actualResponseEntity = prophetResource.createProphet(new ProphetDTO(login));
 
         // Then
         assertEquals(expectedResponseEntity, actualResponseEntity);
@@ -111,13 +111,13 @@ class ProphetResourceTest {
         Mockito.when(prophetService.createProphet(Mockito.eq(LOGIN))).thenThrow(new ProphetAlreadyExistsException());
 
         // When
-        ResponseEntity actualResponseEntity = prophetResource.createProphet(new Prophet(LOGIN, null));
+        ResponseEntity actualResponseEntity = prophetResource.createProphet(new ProphetDTO(LOGIN));
 
         // Then
         assertEquals(expectedResponseEntity, actualResponseEntity);
     }
 
-    private Prophet buildProphet() {
-        return new Prophet(LOGIN, UUID.randomUUID().toString());
+    private ProphetDTO buildProphet() {
+        return new ProphetDTO(LOGIN, UUID.randomUUID().toString());
     }
 }

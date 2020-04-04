@@ -1,5 +1,6 @@
 package com.lcarvalho.isaid.api.service;
 
+import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
@@ -29,12 +30,12 @@ class ProphetServiceTest {
     public void testCreateProphet() throws ProphetAlreadyExistsException, InvalidParameterException {
 
         // Given
-        Prophet expectedProphet = buildProphet();
+        ProphetDTO expectedProphet = buildProphet();
         Mockito.when(prophetRepository.findByLogin(Mockito.any())).thenReturn(null);
-        Mockito.when(prophetRepository.save(Mockito.any())).thenReturn(expectedProphet);
+        Mockito.when(prophetRepository.save(Mockito.any())).thenReturn(convertToProphet(expectedProphet));
 
         // When
-        Prophet actualProphet = prophetService.createProphet(LOGIN);
+        ProphetDTO actualProphet = prophetService.createProphet(LOGIN);
 
         // Then
         assertEquals(expectedProphet, actualProphet);
@@ -68,7 +69,7 @@ class ProphetServiceTest {
     public void testCreateAlreadyExistentProphet() {
 
         // Given
-        Mockito.when(prophetRepository.findByLogin(Mockito.eq(LOGIN))).thenReturn(buildProphet());
+        Mockito.when(prophetRepository.findByLogin(Mockito.eq(LOGIN))).thenReturn(convertToProphet(buildProphet()));
 
         // When Then
         assertThrows(
@@ -80,11 +81,11 @@ class ProphetServiceTest {
     public void testRetrieveProphet() throws InvalidParameterException {
 
         // Given
-        Prophet expectedProphet = buildProphet();
-        Mockito.when(prophetRepository.findByLogin(Mockito.anyString())).thenReturn(expectedProphet);
+        ProphetDTO expectedProphet = buildProphet();
+        Mockito.when(prophetRepository.findByLogin(Mockito.anyString())).thenReturn(convertToProphet(expectedProphet));
 
         // When
-        Prophet actualProphet = prophetService.retrieveProphetBy(LOGIN);
+        ProphetDTO actualProphet = prophetService.retrieveProphetBy(LOGIN);
 
         // Then
         assertEquals(expectedProphet, actualProphet);
@@ -114,8 +115,12 @@ class ProphetServiceTest {
                 () -> prophetService.retrieveProphetBy(login));
     }
 
-    public Prophet buildProphet() {
-        return new Prophet(LOGIN, PROPHET_CODE);
+    private ProphetDTO buildProphet() {
+        return new ProphetDTO(LOGIN, PROPHET_CODE);
+    }
+
+    private Prophet convertToProphet(ProphetDTO prophetDTO) {
+        return new Prophet(prophetDTO.getLogin(), prophetDTO.getProphetCode());
     }
 
 }

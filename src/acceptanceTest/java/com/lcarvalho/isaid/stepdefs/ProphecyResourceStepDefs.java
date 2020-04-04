@@ -1,6 +1,7 @@
 package com.lcarvalho.isaid.stepdefs;
 
 import com.lcarvalho.isaid.api.application.resource.ProphecyResource;
+import com.lcarvalho.isaid.api.domain.dto.ProphecyDTO;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.api.domain.entity.Prophecy;
 import com.lcarvalho.isaid.api.service.ProphecyService;
@@ -38,7 +39,7 @@ public class ProphecyResourceStepDefs {
 
     @When("clients makes a POST request to {string} prophecies with {string} as summary and {string} as description")
     public void postRequestToProphecy(final String prophetLogin, final String summary, final String description) throws ProphetNotFoundException {
-        actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new Prophecy(null, null, summary, description));
+        actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new ProphecyDTO(summary, description));
     }
 
     @When("clients makes a GET request to {string} prophecies")
@@ -87,14 +88,14 @@ public class ProphecyResourceStepDefs {
     @Then("a prophecy with {string} as prophetCode, {string} as prophecyTimestamp, {string} as summary and {string} as description should be returned in the response body")
     public void assertResponseBodyProphecy(String prophetCode, String prophecyTimestamp, String summary, String description) {
 
-        Prophecy expectedProphecy = new Prophecy(prophetCode, LocalDateTime.parse(prophecyTimestamp), summary, description);
-        List<Prophecy> actualProphecies = (List<Prophecy>) actualResponseEntity.getBody();
+        ProphecyDTO expectedProphecy = new ProphecyDTO(prophetCode, LocalDateTime.parse(prophecyTimestamp), summary, description);
+        List<ProphecyDTO> actualProphecies = (List<ProphecyDTO>) actualResponseEntity.getBody();
         assertTrue(actualProphecies.contains(expectedProphecy));
     }
 
     @Then("a prophecy list with {int} elements should be returned in the response body")
     public void assertResponseBodyEmptyProphecies(final Integer expectedSize) {
-        List<Prophecy> actualProphecies = (List<Prophecy>) actualResponseEntity.getBody();
+        List<ProphecyDTO> actualProphecies = (List<ProphecyDTO>) actualResponseEntity.getBody();
         assertEquals(expectedSize.intValue(), actualProphecies.size());
     }
 }
