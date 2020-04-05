@@ -48,12 +48,14 @@ public class DynamoDBConfig {
                           String amazonAWSAccessKey,
                           String amazonAWSSecretKey,
                           String amazonAWSRegion,
-                          Boolean useAmazonIAMRole) {
+                          Boolean useAmazonIAMRole,
+                          Boolean useEmbeddedDynamoDB) {
         this.amazonDynamoDBEndpoint = amazonDynamoDBEndpoint;
         this.amazonAWSAccessKey = amazonAWSAccessKey;
         this.amazonAWSSecretKey = amazonAWSSecretKey;
         this.amazonAWSRegion = amazonAWSRegion;
         this.useAmazonIAMRole = useAmazonIAMRole;
+        this.useEmbeddedDynamoDB = useEmbeddedDynamoDB;
     }
 
     @Bean
@@ -67,14 +69,20 @@ public class DynamoDBConfig {
         LOGGER.info("m=amazonDynamoDB, useEmbeddedDynamoDB=" + useEmbeddedDynamoDB);
 
         if (useEmbeddedDynamoDB) {
-            AwsDynamoDbLocalTestUtils.initSqLite();
-            return DynamoDBEmbedded.create().amazonDynamoDB();
+            return buildEmbeddedDynamoDB();
         }
 
         AmazonDynamoDBClientBuilder builder = configDBClientBuilder();
         return builder.build();
     }
 
+    @VisibleForTesting
+    protected AmazonDynamoDB buildEmbeddedDynamoDB() {
+        AwsDynamoDbLocalTestUtils.initSqLite();
+        return DynamoDBEmbedded.create().amazonDynamoDB();
+    }
+
+    @VisibleForTesting
     protected AmazonDynamoDBClientBuilder configDBClientBuilder() {
 
         validateProperties();

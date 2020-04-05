@@ -3,13 +3,19 @@ package com.lcarvalho.isaid.api.infrastructure.config;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.model.DescribeEndpointsRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.security.InvalidParameterException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class DynamoDBConfigTest {
 
     private static final String AMAZON_DYNAMODB_ENDPOINT = "http://localhost:8080";
@@ -17,6 +23,7 @@ class DynamoDBConfigTest {
     private static final String AMAZON_SECRET_KEY = "testSecretKey";
     private static final String AMAZON_REGION = "us-east-1";
     private static final Boolean USE_AMAZON_IAM_ROLE = Boolean.TRUE;
+    private static final Boolean USE_EMBEDDED_DYNAMO_DB = Boolean.FALSE;
 
     private DynamoDBConfig dynamoDBConfig;
 
@@ -24,7 +31,7 @@ class DynamoDBConfigTest {
     public void testConfigDBClientBuilder() {
 
         // Given
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
 
         // When
         AmazonDynamoDBClientBuilder actualBuilder = dynamoDBConfig.configDBClientBuilder();
@@ -40,7 +47,7 @@ class DynamoDBConfigTest {
 
         // Given
         Boolean useAmazonIAMRole = Boolean.FALSE;
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, useAmazonIAMRole);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, useAmazonIAMRole, USE_EMBEDDED_DYNAMO_DB);
 
         // When
         AmazonDynamoDBClientBuilder actualBuilder = dynamoDBConfig.configDBClientBuilder();
@@ -59,7 +66,7 @@ class DynamoDBConfigTest {
 
         // Given
         String amazonAccessKey = null;
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, amazonAccessKey, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, amazonAccessKey, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
 
         // When
         AmazonDynamoDBClientBuilder actualBuilder = dynamoDBConfig.configDBClientBuilder();
@@ -75,7 +82,7 @@ class DynamoDBConfigTest {
 
         // Given
         String amazonAccessKey = "";
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, amazonAccessKey, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, amazonAccessKey, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
 
         // When
         AmazonDynamoDBClientBuilder actualBuilder = dynamoDBConfig.configDBClientBuilder();
@@ -91,7 +98,7 @@ class DynamoDBConfigTest {
 
         // Given
         String amazonSecretKey = null;
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, amazonSecretKey, AMAZON_REGION, USE_AMAZON_IAM_ROLE);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, amazonSecretKey, AMAZON_REGION, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
 
         // When
         AmazonDynamoDBClientBuilder actualBuilder = dynamoDBConfig.configDBClientBuilder();
@@ -107,7 +114,7 @@ class DynamoDBConfigTest {
 
         // Given
         String amazonSecretKey = "";
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, amazonSecretKey, AMAZON_REGION, USE_AMAZON_IAM_ROLE);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, amazonSecretKey, AMAZON_REGION, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
 
         // When
         AmazonDynamoDBClientBuilder actualBuilder = dynamoDBConfig.configDBClientBuilder();
@@ -123,7 +130,7 @@ class DynamoDBConfigTest {
 
         // Given
         String amazonDynamoDBEndpoint = null;
-        dynamoDBConfig = new DynamoDBConfig(amazonDynamoDBEndpoint, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE);
+        dynamoDBConfig = new DynamoDBConfig(amazonDynamoDBEndpoint, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
 
         // When Then
         assertThrows(
@@ -136,7 +143,7 @@ class DynamoDBConfigTest {
 
         // Given
         String amazonDynamoDBEndpoint = "";
-        dynamoDBConfig = new DynamoDBConfig(amazonDynamoDBEndpoint, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE);
+        dynamoDBConfig = new DynamoDBConfig(amazonDynamoDBEndpoint, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
 
         // When Then
         assertThrows(
@@ -150,7 +157,7 @@ class DynamoDBConfigTest {
         // Given
         String amazonAccessKey = null;
         Boolean useIAMRole = Boolean.FALSE;
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, amazonAccessKey, AMAZON_SECRET_KEY, AMAZON_REGION, useIAMRole);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, amazonAccessKey, AMAZON_SECRET_KEY, AMAZON_REGION, useIAMRole, USE_EMBEDDED_DYNAMO_DB);
 
         // When Then
         assertThrows(
@@ -164,7 +171,7 @@ class DynamoDBConfigTest {
         // Given
         String amazonAccessKey = "";
         Boolean useIAMRole = Boolean.FALSE;
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, amazonAccessKey, AMAZON_SECRET_KEY, AMAZON_REGION, useIAMRole);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, amazonAccessKey, AMAZON_SECRET_KEY, AMAZON_REGION, useIAMRole, USE_EMBEDDED_DYNAMO_DB);
 
         // When Then
         assertThrows(
@@ -178,7 +185,7 @@ class DynamoDBConfigTest {
         // Given
         String amazonSecretKey = null;
         Boolean useIAMRole = Boolean.FALSE;
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, amazonSecretKey, AMAZON_REGION, useIAMRole);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, amazonSecretKey, AMAZON_REGION, useIAMRole, USE_EMBEDDED_DYNAMO_DB);
 
         // When Then
         assertThrows(
@@ -192,7 +199,7 @@ class DynamoDBConfigTest {
         // Given
         String amazonSecretKey = "";
         Boolean useIAMRole = Boolean.FALSE;
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, amazonSecretKey, AMAZON_REGION, useIAMRole);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, amazonSecretKey, AMAZON_REGION, useIAMRole, USE_EMBEDDED_DYNAMO_DB);
 
         // When Then
         assertThrows(
@@ -205,7 +212,7 @@ class DynamoDBConfigTest {
 
         // Given
         String amazonRegion = null;
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, amazonRegion, USE_AMAZON_IAM_ROLE);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, amazonRegion, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
 
         // When Then
         assertThrows(
@@ -218,7 +225,7 @@ class DynamoDBConfigTest {
 
         // Given
         String amazonRegion = "";
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, amazonRegion, USE_AMAZON_IAM_ROLE);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, amazonRegion, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
 
         // When Then
         assertThrows(
@@ -231,11 +238,41 @@ class DynamoDBConfigTest {
 
         // Given
         Boolean useIAMRole = null;
-        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, useIAMRole);
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, useIAMRole, USE_EMBEDDED_DYNAMO_DB);
 
         // When Then
         assertThrows(
                 InvalidParameterException.class,
                 () -> dynamoDBConfig.configDBClientBuilder());
+    }
+
+    @Test
+    public void testAmazonDynamoDBWithEmbeddedConfiguration() {
+
+        // Given
+        Boolean useEmbeddedDynamoDB = Boolean.TRUE;
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE, useEmbeddedDynamoDB);
+        DynamoDBConfig mockedDynamoDBConfig = Mockito.spy(dynamoDBConfig);
+
+        // When
+        mockedDynamoDBConfig.amazonDynamoDB();
+
+        // Then
+        Mockito.verify(mockedDynamoDBConfig, Mockito.times(1)).buildEmbeddedDynamoDB();
+    }
+
+    @Test
+    public void testAmazonDynamoDBWithExternalDynamoDB() {
+
+        // Given
+        Boolean useEmbeddedDynamoDB = Boolean.TRUE;
+        dynamoDBConfig = new DynamoDBConfig(AMAZON_DYNAMODB_ENDPOINT, AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_REGION, USE_AMAZON_IAM_ROLE, USE_EMBEDDED_DYNAMO_DB);
+        DynamoDBConfig mockedDynamoDBConfig = Mockito.spy(dynamoDBConfig);
+
+        // When
+        mockedDynamoDBConfig.amazonDynamoDB();
+
+        // Then
+        Mockito.verify(mockedDynamoDBConfig, Mockito.times(1)).configDBClientBuilder();
     }
 }
