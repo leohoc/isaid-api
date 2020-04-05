@@ -2,9 +2,12 @@ package com.lcarvalho.isaid.stepdefs;
 
 import com.lcarvalho.isaid.api.application.resource.ProphecyResource;
 import com.lcarvalho.isaid.api.domain.dto.ProphecyDTO;
+import com.lcarvalho.isaid.api.infrastructure.persistence.ProphecyRepository;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.api.domain.entity.Prophecy;
 import com.lcarvalho.isaid.api.service.ProphecyService;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -16,9 +19,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProphecyResourceStepDefs {
 
@@ -30,11 +33,14 @@ public class ProphecyResourceStepDefs {
     @Autowired
     private ProphecyService prophecyService;
 
+    @Autowired
+    private ProphecyRepository prophecyRepository;
+
     private ResponseEntity actualResponseEntity;
 
-    @Given("that exists a stored prophecy with {string} as prophetCode, {string} as prophecyTimestamp, {string} as summary and {string} as description")
-    public void createProphecy(final String prophetCode, final String prophecyTimestamp, final String summary, final String description) {
-        prophecyService.createProphecy(new Prophecy(prophetCode, LocalDateTime.parse(prophecyTimestamp), summary, description));
+    @Given("the following prophecies exists:")
+    public void createProphecies(List<Prophecy> prophecies) {
+        prophecyRepository.saveAll(prophecies);
     }
 
     @When("clients makes a POST request to {string} prophecies with {string} as summary and {string} as description")
@@ -66,36 +72,56 @@ public class ProphecyResourceStepDefs {
         actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, startDateTime, endDateTime);
     }
 
-    @Then("a prophecy with {string} as prophetCode, {string} as summary and {string} as description should exist in the database")
-    public void assertProphecy(final String expectedProphetCode, final String expectedSummary, final String expectedDescription) {
-
-        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(expectedProphetCode);
-
-        if (actualProphecies != null && actualProphecies.size() > 0) {
-
-            Prophecy actualProphecy = actualProphecies.get(0);
-            assertEquals(expectedProphetCode, actualProphecy.getProphetCode());
-            assertEquals(expectedSummary, actualProphecy.getSummary());
-            assertEquals(expectedDescription, actualProphecy.getDescription());
-        }
-    }
-
     @Then("a {int} http response will be returned by the Prophecy resource")
     public void assertHttpStatusResponse(final Integer expectedHttpStatus) {
         assertEquals(HttpStatus.valueOf(expectedHttpStatus), actualResponseEntity.getStatusCode());
     }
 
-    @Then("a prophecy with {string} as prophetCode, {string} as prophecyTimestamp, {string} as summary and {string} as description should be returned in the response body")
-    public void assertResponseBodyProphecy(String prophetCode, String prophecyTimestamp, String summary, String description) {
+    @Then("{word} the database for a prophecy with {string}, {string} and {string}")
+    public void assertProphecyInDatabase(final String searchDatabase, final String expectedProphetCode, final String expectedSummary, final String expectedDescription) {
+        if (Boolean.valueOf(searchDatabase)) {
+            List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(expectedProphetCode);
 
-        ProphecyDTO expectedProphecy = new ProphecyDTO(prophetCode, LocalDateTime.parse(prophecyTimestamp), summary, description);
-        List<ProphecyDTO> actualProphecies = (List<ProphecyDTO>) actualResponseEntity.getBody();
-        assertTrue(actualProphecies.contains(expectedProphecy));
+            if (actualProphecies != null && actualProphecies.size() > 0) {
+
+                Prophecy actualProphecy = actualProphecies.get(0);
+                assertEquals(expectedProphetCode, actualProphecy.getProphetCode());
+                assertEquals(expectedSummary, actualProphecy.getSummary());
+                assertEquals(expectedDescription, actualProphecy.getDescription());
+            }
+        }
     }
 
     @Then("a prophecy list with {int} elements should be returned in the response body")
-    public void assertResponseBodyEmptyProphecies(final Integer expectedSize) {
+    public void assertResponseBodyProphecyListSize(final Integer expectedSize) {
+        this.assertResponseBodyProphecyListSize(Boolean.TRUE.toString(), expectedSize);
+    }
+
+    @Then("{word} a prophecy list with {int} elements should be returned in the response body")
+    public void assertResponseBodyProphecyListSize(final String verifyResponseBody, final Integer expectedSize) {
+        if (Boolean.valueOf(verifyResponseBody)) {
+            List<ProphecyDTO> actualProphecies = (List<ProphecyDTO>) actualResponseEntity.getBody();
+            assertEquals(expectedSize.intValue(), actualProphecies.size());
+        }
+    }
+
+    @Then("the following prophecies will be returned in the response body")
+    public void assertResponseBodyProphecies(List<ProphecyDTO> expectedProphecies) {
         List<ProphecyDTO> actualProphecies = (List<ProphecyDTO>) actualResponseEntity.getBody();
-        assertEquals(expectedSize.intValue(), actualProphecies.size());
+        assertEquals(expectedProphecies, actualProphecies);
+    }
+
+    @DataTableType
+    public List<Prophecy> getProphecies(DataTable table) {
+        return table.asMaps().stream()
+                .map(m -> new Prophecy(m.get("prophetCode"), LocalDateTime.parse(m.get("prophecyTimestamp")), m.get("summary"), m.get("description")))
+                .collect(Collectors.toList());
+    }
+
+    @DataTableType
+    public List<ProphecyDTO> getProphecyDTOList(DataTable table) {
+        return table.asMaps().stream()
+                .map(m -> new ProphecyDTO(m.get("prophetCode"), LocalDateTime.parse(m.get("prophecyTimestamp")), m.get("summary"), m.get("description")))
+                .collect(Collectors.toList());
     }
 }

@@ -2,10 +2,14 @@ package com.lcarvalho.isaid.stepdefs;
 
 import com.lcarvalho.isaid.api.application.resource.ProphetResource;
 import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
+import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.service.ProphetService;
 import com.lcarvalho.isaid.config.SpringAcceptanceTest;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -13,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,12 +30,16 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
     @Autowired
     private ProphetResource prophetResource;
 
+    @Autowired
+    private ProphetRepository prophetRepository;
+
     private  ResponseEntity actualResponseEntity;
 
-    @Given("that exists a registered prophet with {string} as login and {string} as prophetCode")
-    public void createProphet(String login, String prophetCode) throws IOException, InvalidParameterException {
-        prophetService.createProphet(login, prophetCode);
+    @Given("the following prophets exists:")
+    public void createProphets(List<Prophet> prophetList) {
+        prophetRepository.saveAll(prophetList);
     }
+
 
     @When("clients makes a GET request to Prophet resource passing {string} as login")
     public void getProphet(String login) {
@@ -42,23 +51,22 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
         actualResponseEntity = prophetResource.createProphet(new ProphetDTO(login));
     }
 
-    @Then("a {int} http response with a body containing a prophet with {string} as login and {string} as code will be returned")
-    public void assertGetProphetResponse(Integer expectedHttpStatus, String expectedLogin, String expectedProphetCode) {
+    @Then("{word} in the body a prophet with {string} as login and {string} as code")
+    public void assertGetProphetResponse(String verifyResponseBody, String expectedLogin, String expectedProphetCode) {
 
-        ResponseEntity expectedResponseEntity = buildResponseEntity(
-                            HttpStatus.valueOf(expectedHttpStatus),
-                            new ProphetDTO(expectedLogin, expectedProphetCode));
-
-        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
-        assertEquals(((ProphetDTO)expectedResponseEntity.getBody()).getLogin(), ((ProphetDTO)actualResponseEntity.getBody()).getLogin());
-        assertEquals(((ProphetDTO)expectedResponseEntity.getBody()).getProphetCode(), ((ProphetDTO)actualResponseEntity.getBody()).getProphetCode());
+        if (Boolean.valueOf(verifyResponseBody)) {
+            assertEquals(expectedLogin, ((ProphetDTO)actualResponseEntity.getBody()).getLogin());
+            assertEquals(expectedProphetCode, ((ProphetDTO)actualResponseEntity.getBody()).getProphetCode());
+        }
     }
 
-    @Then("a prophet with login equals to {string} should exist in the database")
-    public void verifyProphetInDatabase(String expectedLogin) throws InvalidParameterException {
-        ProphetDTO expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
-        assertNotNull(expectedProphet);
-        assertEquals(expectedLogin, expectedProphet.getLogin());
+    @Then("{word} a prophet with login equals to {string} in the database")
+    public void verifyProphetInDatabase(String verifyDatabase, String expectedLogin) throws InvalidParameterException {
+        if (Boolean.valueOf(verifyDatabase)) {
+            ProphetDTO expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
+            assertNotNull(expectedProphet);
+            assertEquals(expectedLogin, expectedProphet.getLogin());
+        }
     }
 
     @Then("a {int} http response will be returned by the Prophet resource")
@@ -66,7 +74,8 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
         assertEquals(HttpStatus.valueOf(expectedHttpStatus), actualResponseEntity.getStatusCode());
     }
 
-    private ResponseEntity buildResponseEntity(HttpStatus httpStatus, ProphetDTO prophet) {
-        return new ResponseEntity(prophet, httpStatus);
+    @DataTableType
+    public List<Prophet> getProphets(DataTable table) {
+        return table.asMaps().stream().map(m -> new Prophet(m.get("login"), m.get("prophetCode"))).collect(Collectors.toList());
     }
 }

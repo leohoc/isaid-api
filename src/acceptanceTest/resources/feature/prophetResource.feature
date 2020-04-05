@@ -1,30 +1,31 @@
 Feature: Testing the Prophet API
   Clients should be able to create prophets by using POST request and retrieve then using a GET resource
 
-  Scenario: Retrieving a Prophet
-    Given that exists a registered prophet with "lskywalker" as login and "c25b1d8b-4246-408c-8521-937cf13a38be" as prophetCode
-    When clients makes a GET request to Prophet resource passing "lskywalker" as login
-    Then a 200 http response with a body containing a prophet with "lskywalker" as login and "c25b1d8b-4246-408c-8521-937cf13a38be" as code will be returned
+  Background:
 
-  Scenario: Retrieving a nonexistent Prophet
-    When clients makes a GET request to Prophet resource passing "hsolo" as login
-    Then a 404 http response will be returned by the Prophet resource
-    
-  Scenario: Retrieving a Prophet with invalid parameter
-    When clients makes a GET request to Prophet resource passing "" as login
-    Then a 400 http response will be returned by the Prophet resource
+    Given the following prophets exists:
+      | login      | prophetCode                          |
+      | lskywalker | c25b1d8b-4246-408c-8521-937cf13a38be |
+      | okenobi    | 64bf9ae2-37eb-4ad5-8060-5361fd763c46 |
 
-  Scenario: Creating a Prophet
-    When clients makes a POST request with "lorgana" as login
-    Then a 200 http response will be returned by the Prophet resource
-    And a prophet with login equals to "lorgana" should exist in the database
+    Scenario Outline: Retrieving Prophets
+      When clients makes a GET request to Prophet resource passing "<login>" as login
+      Then a <httpResponseCode> http response will be returned by the Prophet resource
+      And <shouldBeReturned> in the body a prophet with "<login>" as login and "<prophetCode>" as code
 
-  Scenario: Creating a Prophet with invalid parameter
-    When clients makes a POST request with "" as login
-    Then a 400 http response will be returned by the Prophet resource
+      Examples:
+        | login      | httpResponseCode | shouldBeReturned | prophetCode                          |
+        | lskywalker | 200              | true             | c25b1d8b-4246-408c-8521-937cf13a38be |
+        | hsolo      | 404              | false            |                                      |
+        |            | 400              | false            |                                      |
 
-  Scenario: Creating an already existent Prophet
-    Given that exists a registered prophet with "okenobi" as login and "64bf9ae2-37eb-4ad5-8060-5361fd763c46" as prophetCode
-    When clients makes a POST request with "okenobi" as login
-    Then a 409 http response will be returned by the Prophet resource
-    And a prophet with login equals to "okenobi" should exist in the database
+    Scenario Outline: Creating Prophets
+      When clients makes a POST request with "<login>" as login
+      Then a <httpResponseCode> http response will be returned by the Prophet resource
+      And <shouldVerify> a prophet with login equals to "<login>" in the database
+
+      Examples:
+        | login   | httpResponseCode | shouldVerify |
+        | lorgana | 200              | true         |
+        |         | 400              | false        |
+        | okenobi | 409              | true         |
