@@ -7,7 +7,8 @@
 Main REST API of the ISAID Project.
 Currently it provides the following resources:
 
-  * Prophet (/prophet);
+  * Prophet (/prophets);
+  * Prophecy (/prophets/{login}/prophecies)
 
 ### Development
 
