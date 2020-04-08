@@ -4,10 +4,13 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "Prophecy")
 public class Prophecy {
+
+    private static final ZoneId saoPauloZoneId = ZoneId.of("America/Sao_Paulo");
 
     @Id
     private ProphecyId prophecyId;
@@ -21,7 +24,7 @@ public class Prophecy {
     }
 
     public Prophecy(String prophetCode, String summary, String description) {
-        this.prophecyId = new ProphecyId(prophetCode, LocalDateTime.now());
+        this.prophecyId = new ProphecyId(prophetCode, LocalDateTime.now(saoPauloZoneId));
         this.summary = summary;
         this.description = description;
     }
