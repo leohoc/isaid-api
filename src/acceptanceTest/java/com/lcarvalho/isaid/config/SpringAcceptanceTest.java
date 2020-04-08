@@ -1,18 +1,16 @@
 package com.lcarvalho.isaid.config;
 
 import com.lcarvalho.isaid.api.ApiApplication;
+import com.lcarvalho.isaid.commons.HttpClient;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 @ContextConfiguration(
-  classes = {ApiApplication.class, EmbeddedDynamoDBInitializer.class},
+  classes = {ApiApplication.class, EmbeddedDynamoDBInitializer.class, HttpClient.class},
   loader = SpringBootContextLoader.class)
-@WebAppConfiguration
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class SpringAcceptanceTest {
- 
 }

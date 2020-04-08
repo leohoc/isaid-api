@@ -7,6 +7,7 @@ import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.service.ProphetService;
+import com.lcarvalho.isaid.commons.HttpClient;
 import com.lcarvalho.isaid.config.SpringAcceptanceTest;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.DataTableType;
@@ -28,10 +29,10 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
     private ProphetService prophetService;
 
     @Autowired
-    private ProphetResource prophetResource;
+    private ProphetRepository prophetRepository;
 
     @Autowired
-    private ProphetRepository prophetRepository;
+    private HttpClient httpClient;
 
     private  ResponseEntity actualResponseEntity;
 
@@ -40,15 +41,14 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
         prophetRepository.saveAll(prophetList);
     }
 
-
-    @When("clients makes a GET request to Prophet resource passing {string} as login")
-    public void getProphet(String login) {
-        actualResponseEntity = prophetResource.getProphet(login);
+    @When("clients makes a GET request to {string}")
+    public void getProphet(String uri) {
+        actualResponseEntity = httpClient.get(uri, ProphetDTO.class);
     }
 
-    @When("clients makes a POST request with {string} as login")
-    public void createProphet(String login) throws ProphetAlreadyExistsException {
-        actualResponseEntity = prophetResource.createProphet(new ProphetDTO(login));
+    @When("clients makes a POST request to {string} with {string} in the body")
+    public void createProphet(String uri, String jsonBodyRequest) {
+        actualResponseEntity = httpClient.post(uri, jsonBodyRequest, ProphetDTO.class);
     }
 
     @Then("{word} in the body a prophet with {string} as login and {string} as code")
