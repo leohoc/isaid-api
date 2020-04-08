@@ -3,9 +3,9 @@ package com.lcarvalho.isaid.stepdefs;
 import com.lcarvalho.isaid.api.application.resource.ProphecyResource;
 import com.lcarvalho.isaid.api.domain.dto.ProphecyDTO;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphecyRepository;
-import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.api.domain.entity.Prophecy;
 import com.lcarvalho.isaid.api.service.ProphecyService;
+import com.lcarvalho.isaid.commons.HttpClient;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,9 @@ public class ProphecyResourceStepDefs {
     @Autowired
     private ProphecyRepository prophecyRepository;
 
+    @Autowired
+    private HttpClient httpClient;
+
     private ResponseEntity actualResponseEntity;
 
     @Given("the following prophecies exists:")
@@ -43,33 +47,14 @@ public class ProphecyResourceStepDefs {
         prophecyRepository.saveAll(prophecies);
     }
 
-    @When("clients makes a POST request to {string} prophecies with {string} as summary and {string} as description")
-    public void postRequestToProphecy(final String prophetLogin, final String summary, final String description) throws ProphetNotFoundException {
-        actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new ProphecyDTO(summary, description));
+    @When("clients makes a POST request to the Prophecy resource with {string} uri and {string} in the body")
+    public void postRequestToProphecy(String uri, String jsonBodyRequest) {
+        actualResponseEntity = httpClient.post(uri, jsonBodyRequest, ProphecyDTO.class);
     }
 
-    @When("clients makes a GET request to {string} prophecies")
-    public void clientsMakesAGETRequestToProphecies(String prophetLogin) {
-        clientsMakesAGETRequestToProphecies(prophetLogin, null, null);
-    }
-
-    @When("clients makes a GET request to {string} prophecies filtering by prophecies latest than {string}")
-    public void clientsMakesAGETRequestToPropheciesLatestThanStartDateTime(String prophetLogin, String startDateTimeString) {
-        clientsMakesAGETRequestToProphecies(prophetLogin, startDateTimeString, null);
-    }
-
-    @When("clients makes a GET request to {string} prophecies filtering by prophecies older than {string}")
-    public void clientsMakesAGETRequestToPropheciesOldestThanEndDateTime(String prophetLogin, String endDateTimeString) {
-        clientsMakesAGETRequestToProphecies(prophetLogin, null, endDateTimeString);
-    }
-
-    @When("clients makes a GET request to {string} prophecies filtering by prophecies between {string} and {string}")
-    public void clientsMakesAGETRequestToProphecies(final String prophetLogin, final String startDateTimeString, final String endDateTimeString) {
-
-        LocalDateTime startDateTime = startDateTimeString == null ? null : LocalDateTime.parse(startDateTimeString);
-        LocalDateTime endDateTime = endDateTimeString == null ? null : LocalDateTime.parse(endDateTimeString);
-
-        actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, startDateTime, endDateTime);
+    @When("clients makes a GET request to the Prophecy resource with {string} uri")
+    public void getProphecies(String uri) {
+        actualResponseEntity = httpClient.get(uri, ProphecyDTO[].class);
     }
 
     @Then("a {int} http response will be returned by the Prophecy resource")
@@ -100,14 +85,14 @@ public class ProphecyResourceStepDefs {
     @Then("{word} a prophecy list with {int} elements should be returned in the response body")
     public void assertResponseBodyProphecyListSize(final String verifyResponseBody, final Integer expectedSize) {
         if (Boolean.valueOf(verifyResponseBody)) {
-            List<ProphecyDTO> actualProphecies = (List<ProphecyDTO>) actualResponseEntity.getBody();
+            List<ProphecyDTO> actualProphecies = Arrays.asList((ProphecyDTO[])actualResponseEntity.getBody());
             assertEquals(expectedSize.intValue(), actualProphecies.size());
         }
     }
 
     @Then("the following prophecies will be returned in the response body")
     public void assertResponseBodyProphecies(List<ProphecyDTO> expectedProphecies) {
-        List<ProphecyDTO> actualProphecies = (List<ProphecyDTO>) actualResponseEntity.getBody();
+        List<ProphecyDTO> actualProphecies = Arrays.asList((ProphecyDTO[])actualResponseEntity.getBody());
         assertEquals(expectedProphecies, actualProphecies);
     }
 

@@ -1,11 +1,9 @@
 package com.lcarvalho.isaid.stepdefs;
 
-import com.lcarvalho.isaid.api.application.resource.ProphetResource;
 import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
-import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.service.ProphetService;
 import com.lcarvalho.isaid.commons.HttpClient;
 import com.lcarvalho.isaid.config.SpringAcceptanceTest;
@@ -41,12 +39,12 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
         prophetRepository.saveAll(prophetList);
     }
 
-    @When("clients makes a GET request to {string}")
+    @When("clients makes a GET request to the Prophet resource with {string} uri")
     public void getProphet(String uri) {
         actualResponseEntity = httpClient.get(uri, ProphetDTO.class);
     }
 
-    @When("clients makes a POST request to {string} with {string} in the body")
+    @When("clients makes a POST request to the Prophet resource with {string} uri and {string} in the body")
     public void createProphet(String uri, String jsonBodyRequest) {
         actualResponseEntity = httpClient.post(uri, jsonBodyRequest, ProphetDTO.class);
     }
