@@ -20,7 +20,7 @@ Currently it provides the following resources:
 #### Create a local DynamoDB instance
 
 The isaid-api uses DynamoDB to store its data.
-For development purposes, you can run a local instance in your machine, following the instructions of the [isaid-database-migration](https://github.com/leohoc/isaid-database-migration) project.
+For development purposes, you can run a local instance in your machine, following the instructions of the [isaid-local-database](https://github.com/leohoc/isaid-local-database) project.
 
 #### Run
 
