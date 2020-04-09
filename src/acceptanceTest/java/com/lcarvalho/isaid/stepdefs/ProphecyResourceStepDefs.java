@@ -26,8 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProphecyResourceStepDefs {
 
-    private static Logger LOGGER = LogManager.getLogger();
-
     @Autowired
     private ProphecyResource prophecyResource;
 

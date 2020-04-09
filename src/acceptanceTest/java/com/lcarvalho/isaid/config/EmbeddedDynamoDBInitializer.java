@@ -3,6 +3,7 @@ package com.lcarvalho.isaid.config;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.*;
+import com.lcarvalho.isaid.api.domain.entity.Follower;
 import com.lcarvalho.isaid.api.domain.entity.Prophecy;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +22,7 @@ public class EmbeddedDynamoDBInitializer {
 
     @BeforeTestClass
     public void setup() {
-        this.createTables(Prophet.class, Prophecy.class);
+        this.createTables(Prophet.class, Prophecy.class, Follower.class);
     }
 
     private void createTables(Class... classes) {
