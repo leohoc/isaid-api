@@ -5,6 +5,7 @@ import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.ProphetService;
+import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.commons.HttpClient;
 import com.lcarvalho.isaid.config.SpringAcceptanceTest;
 import io.cucumber.datatable.DataTable;
@@ -59,7 +60,7 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
     }
 
     @Then("{word} a prophet with login equals to {string} in the database")
-    public void verifyProphetInDatabase(String verifyDatabase, String expectedLogin) throws InvalidParameterException {
+    public void verifyProphetInDatabase(String verifyDatabase, String expectedLogin) throws InvalidParameterException, ProphetNotFoundException {
         if (Boolean.valueOf(verifyDatabase)) {
             ProphetDTO expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
             assertNotNull(expectedProphet);

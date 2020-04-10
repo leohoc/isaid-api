@@ -4,6 +4,7 @@ import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.service.ProphetService;
+import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ class ProphetResourceTest {
     private ProphetResource prophetResource;
 
     @Test
-    public void testGetProphet() throws InvalidParameterException {
+    public void testGetProphet() throws InvalidParameterException, ProphetNotFoundException {
 
         // Given
         ProphetDTO expectedProphet = buildProphet();
@@ -45,7 +46,7 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testGetProphetByInvalidLoginParameter() throws InvalidParameterException {
+    public void testGetProphetByInvalidLoginParameter() throws InvalidParameterException, ProphetNotFoundException {
 
         // Given
         String login = null;
@@ -60,11 +61,11 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testGetProphetByInexistentLogin() throws InvalidParameterException {
+    public void testGetProphetByInexistentLogin() throws InvalidParameterException, ProphetNotFoundException {
 
         // Given
         ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.NOT_FOUND);
-        Mockito.when(prophetService.retrieveProphetBy(LOGIN)).thenReturn(null);
+        Mockito.when(prophetService.retrieveProphetBy(LOGIN)).thenThrow(new ProphetNotFoundException());
 
         // When
         ResponseEntity actualResponseEntity = prophetResource.getProphet(LOGIN);

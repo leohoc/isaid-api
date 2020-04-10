@@ -10,7 +10,7 @@ import java.util.Objects;
 @DynamoDBTable(tableName = "Prophecy")
 public class Prophecy {
 
-    private static final ZoneId saoPauloZoneId = ZoneId.of("America/Sao_Paulo");
+    private static final ZoneId SAO_PAULO_ZONE_ID = ZoneId.of("America/Sao_Paulo");
 
     @Id
     private ProphecyId prophecyId;
@@ -24,7 +24,7 @@ public class Prophecy {
     }
 
     public Prophecy(String prophetCode, String summary, String description) {
-        this.prophecyId = new ProphecyId(prophetCode, LocalDateTime.now(saoPauloZoneId));
+        this.prophecyId = new ProphecyId(prophetCode, LocalDateTime.now(SAO_PAULO_ZONE_ID));
         this.summary = summary;
         this.description = description;
     }

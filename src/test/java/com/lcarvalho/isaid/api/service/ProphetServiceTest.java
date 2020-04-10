@@ -5,6 +5,7 @@ import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
+import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -78,7 +79,7 @@ class ProphetServiceTest {
     }
 
     @Test
-    public void testRetrieveProphet() throws InvalidParameterException {
+    public void testRetrieveProphet() throws InvalidParameterException, ProphetNotFoundException {
 
         // Given
         ProphetDTO expectedProphet = buildProphet();
@@ -113,6 +114,18 @@ class ProphetServiceTest {
         assertThrows(
                 InvalidParameterException.class,
                 () -> prophetService.retrieveProphetBy(login));
+    }
+
+    @Test
+    public void testRetrieveNonexistentProphet() {
+
+        // Given
+        Mockito.when(prophetRepository.findByLogin(Mockito.eq(LOGIN))).thenReturn(null);
+
+        // When Then
+        assertThrows(
+                ProphetNotFoundException.class,
+                () -> prophetService.retrieveProphetBy(LOGIN));
     }
 
     private ProphetDTO buildProphet() {

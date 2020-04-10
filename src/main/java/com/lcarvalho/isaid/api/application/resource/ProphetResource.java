@@ -4,6 +4,7 @@ import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.service.ProphetService;
+import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,8 @@ public class ProphetResource {
     public ResponseEntity getProphet(@PathVariable(value = "login") String login) {
         try {
             ProphetDTO prophet = prophetService.retrieveProphetBy(login);
-            if (prophet != null) {
-                return new ResponseEntity(prophet, HttpStatus.OK);
-            }
+            return new ResponseEntity(prophet, HttpStatus.OK);
+        } catch (ProphetNotFoundException e) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         } catch (InvalidParameterException e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);

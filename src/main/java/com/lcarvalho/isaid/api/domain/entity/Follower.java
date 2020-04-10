@@ -9,13 +9,18 @@ import java.time.ZoneId;
 @DynamoDBTable(tableName = "Follower")
 public class Follower {
 
-    private static final ZoneId saoPauloZoneId = ZoneId.of("America/Sao_Paulo");
+    private static final ZoneId SAO_PAULO_ZONE_ID = ZoneId.of("America/Sao_Paulo");
 
     @Id
     private FollowerId followerId;
     private String prophetCode;
 
     public Follower() {}
+
+    public Follower(String followerCode, String prophetCode) {
+        this.followerId = new FollowerId(followerCode, LocalDateTime.now(SAO_PAULO_ZONE_ID));
+        this.prophetCode = prophetCode;
+    }
 
     @DynamoDBHashKey(attributeName = "followerCode")
     public String getFollowerCode() {

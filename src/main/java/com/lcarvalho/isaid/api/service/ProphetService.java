@@ -6,6 +6,7 @@ import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
+import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -35,10 +36,15 @@ public class ProphetService {
         return prophetRepository.save(new Prophet(login, prophetCode));
     }
 
-    public ProphetDTO retrieveProphetBy(String login) throws InvalidParameterException {
+    public ProphetDTO retrieveProphetBy(String login) throws InvalidParameterException, ProphetNotFoundException {
+
         validate(login);
+
         Prophet prophet = prophetRepository.findByLogin(login);
-        return prophet == null ? null : new ProphetDTO(prophet);
+        if (prophet == null) {
+            throw new ProphetNotFoundException();
+        }
+        return new ProphetDTO(prophet);
     }
 
     private void validate(String login) throws InvalidParameterException {

@@ -35,7 +35,7 @@ public class ProphecyService {
     public ProphecyDTO createProphecy(final String prophetLogin, final ProphecyDTO prophecyDTO) throws ProphetNotFoundException, InvalidParameterException {
 
         validate(prophetLogin, prophecyDTO.getSummary(), prophecyDTO.getDescription());
-        ProphetDTO prophet = retrieveProphet(prophetLogin);
+        ProphetDTO prophet = prophetService.retrieveProphetBy(prophetLogin);
 
         Prophecy prophecy = prophecyRepository.save(new Prophecy(prophet.getProphetCode(), prophecyDTO.getSummary(), prophecyDTO.getDescription()));
         return new ProphecyDTO(prophecy);
@@ -43,7 +43,7 @@ public class ProphecyService {
 
     public List<ProphecyDTO> retrievePropheciesBy(final String prophetLogin, final LocalDateTime startDateTime, final LocalDateTime endDateTime) throws InvalidParameterException, ProphetNotFoundException {
 
-        ProphetDTO prophet = retrieveProphet(prophetLogin);
+        ProphetDTO prophet = prophetService.retrieveProphetBy(prophetLogin);
         List<Prophecy> prophecies = new ArrayList<>();
 
         if (startDateTime != null && endDateTime != null) {
@@ -63,11 +63,6 @@ public class ProphecyService {
     }
 
     @VisibleForTesting
-    public Prophecy createProphecy(final Prophecy prophecy) {
-        return prophecyRepository.save(prophecy);
-    }
-
-    @VisibleForTesting
     public List<Prophecy> retrievePropheciesBy(final String prophetCode) {
         return prophecyRepository.findByProphetCode(prophetCode);
     }
@@ -82,14 +77,6 @@ public class ProphecyService {
         if (StringUtils.isEmpty(description) || description.length() > DESCRIPTION_MAXIMUM_LENGTH) {
             throw new InvalidParameterException(INVALID_DESCRIPTION_EXCEPTION_MESSAGE);
         }
-    }
-
-    private ProphetDTO retrieveProphet(String prophetLogin) throws InvalidParameterException, ProphetNotFoundException {
-        ProphetDTO prophet = prophetService.retrieveProphetBy(prophetLogin);
-        if (prophet == null) {
-            throw new ProphetNotFoundException();
-        }
-        return prophet;
     }
 
     private List<ProphecyDTO> convertToProphecyDTOList(List<Prophecy> prophecies) {

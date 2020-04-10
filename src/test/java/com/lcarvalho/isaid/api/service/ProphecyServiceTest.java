@@ -204,7 +204,7 @@ class ProphecyServiceTest {
         String summary = "Prophecy summary";
         String description = "Prophecy description";
         ProphecyDTO prophecyDTO = new ProphecyDTO(summary, description);
-        when(prophetService.retrieveProphetBy(eq(prophetLogin))).thenReturn(null);
+        when(prophetService.retrieveProphetBy(eq(prophetLogin))).thenThrow(new ProphetNotFoundException());
 
         // When Then
         assertThrows(
@@ -307,7 +307,7 @@ class ProphecyServiceTest {
     }
 
     @Test
-    public void testRetrieveAllPropheciesOfAProphetWithInvalidLogin() throws InvalidParameterException {
+    public void testRetrieveAllPropheciesOfAProphetWithInvalidLogin() throws InvalidParameterException, ProphetNotFoundException {
 
         // Given
         ProphetDTO prophet = buildProphet("");
@@ -330,7 +330,7 @@ class ProphecyServiceTest {
         LocalDateTime startDateTime = null;
         LocalDateTime endDateTime = null;
 
-        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(null);
+        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenThrow(new ProphetNotFoundException());
 
         // When Then
         assertThrows(
