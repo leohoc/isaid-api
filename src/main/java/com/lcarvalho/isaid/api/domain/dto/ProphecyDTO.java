@@ -1,14 +1,27 @@
 package com.lcarvalho.isaid.api.domain.dto;
 
 import com.lcarvalho.isaid.api.domain.entity.Prophecy;
+import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
+import java.util.UUID;
 
 public class ProphecyDTO {
 
+    private static final ZoneId SAO_PAULO_ZONE_ID = ZoneId.of("America/Sao_Paulo");
+
+    private static final Integer SUMMARY_MAXIMUM_LENGTH = 140;
+    private static final Integer DESCRIPTION_MAXIMUM_LENGTH = 280;
+    private static final String INVALID_PROPHECY_TIMESTAMP_EXCEPTION_MESSAGE = "prophetTimestamp cannot be null";
+    private static final String INVALID_PROPHET_CODE_EXCEPTION_MESSAGE = "prophetCode cannot be null or an empty string";
+    private static final String INVALID_SUMMARY_EXCEPTION_MESSAGE = "summary cannot be null or an empty string and must have a maximum of 140 characters";
+    private static final String INVALID_DESCRIPTION_EXCEPTION_MESSAGE = "description cannot be null or an empty string and must have a maximum of 280 characters";
+
     private String prophetCode;
-    private LocalDateTime prophecyTimestamp;
+    private LocalDateTime prophecyTimestamp = LocalDateTime.now(SAO_PAULO_ZONE_ID);
     private String summary;
     private String description;
 
@@ -63,6 +76,29 @@ public class ProphecyDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void validate() throws InvalidParameterException {
+
+        validateUUID(prophetCode);
+
+        if (prophecyTimestamp == null) {
+            throw new InvalidParameterException(INVALID_PROPHECY_TIMESTAMP_EXCEPTION_MESSAGE);
+        }
+
+        if (StringUtils.isEmpty(summary) || summary.length() > SUMMARY_MAXIMUM_LENGTH) {
+            throw new InvalidParameterException(INVALID_SUMMARY_EXCEPTION_MESSAGE);
+        }
+        if (StringUtils.isEmpty(description) || description.length() > DESCRIPTION_MAXIMUM_LENGTH) {
+            throw new InvalidParameterException(INVALID_DESCRIPTION_EXCEPTION_MESSAGE);
+        }
+    }
+
+    private void validateUUID(String uuid) throws InvalidParameterException {
+        if (StringUtils.isEmpty(uuid)) {
+            throw new InvalidParameterException(INVALID_PROPHET_CODE_EXCEPTION_MESSAGE);
+        }
+        UUID.fromString(uuid);
     }
 
     @Override

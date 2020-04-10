@@ -40,10 +40,9 @@ class ProphecyResourceTest {
         String prophetLogin = "hsolo";
         String summary = "Prophecy summary";
         String description = "Prophecy description";
-        ProphecyDTO requestProphecy = new ProphecyDTO(summary, description);
         ProphecyDTO expectedProphecy = buildProphecy(summary, description);
 
-        when(prophecyService.createProphecy(eq(prophetLogin), eq(requestProphecy))).thenReturn(expectedProphecy);
+        when(prophecyService.createProphecy(eq(prophetLogin), any(ProphecyDTO.class))).thenReturn(expectedProphecy);
 
         // When
         ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new ProphecyDTO(summary, description));
@@ -62,9 +61,8 @@ class ProphecyResourceTest {
         String prophetLogin = "hsolo";
         String summary = null;
         String description = null;
-        ProphecyDTO requestProphecy = new ProphecyDTO(summary, description);
 
-        when(prophecyService.createProphecy(eq(prophetLogin), eq(requestProphecy))).thenThrow(new InvalidParameterException());
+        when(prophecyService.createProphecy(eq(prophetLogin), any(ProphecyDTO.class))).thenThrow(new InvalidParameterException());
 
         // When
         ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new ProphecyDTO(summary, description));
@@ -81,9 +79,8 @@ class ProphecyResourceTest {
         String prophetLogin = "kj12i31i2u3h98y";
         String summary = "Prophecy summary";
         String description = "Prophecy description";
-        ProphecyDTO requestProphecy = new ProphecyDTO(summary, description);
 
-        when(prophecyService.createProphecy(eq(prophetLogin), eq(requestProphecy))).thenThrow(new ProphetNotFoundException());
+        when(prophecyService.createProphecy(eq(prophetLogin), any(ProphecyDTO.class))).thenThrow(new ProphetNotFoundException());
 
         // When
         ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new ProphecyDTO(summary, description));

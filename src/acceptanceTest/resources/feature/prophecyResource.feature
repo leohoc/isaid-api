@@ -36,15 +36,15 @@ Feature: Testing the Prophecy API
       | pamidala     | dbf624fe-55fc-4e4e-9df5-28a95e3a929a | Palpatine wasn't killed at Return of the Jedi | He'll be back sooner than latter         | 200              | true         |
       | hsolo        |                                      | I bet misconfigured bots will try this        | There'll be all sort of strange behavior | 404              | false        |
       |              |                                      | I bet misconfigured bots will try this        | There'll be all sort of strange behavior | 405              | false        |
-      | hsolo        |                                      |                                               | There'll be all sort of strange behavior | 400              | false        |
-      | hsolo        |                                      | I bet misconfigured bots will try this        |                                          | 400              | false        |
+      | pamidala     | dbf624fe-55fc-4e4e-9df5-28a95e3a929a |                                               | There'll be all sort of strange behavior | 400              | false        |
+      | pamidala     | dbf624fe-55fc-4e4e-9df5-28a95e3a929a | I bet misconfigured bots will try this        |                                          | 400              | false        |
 
   Scenario: Retrieve all Prophecies from Prophet
     When clients makes a GET request to the Prophecy resource with "/prophets/jhutt/prophecies" uri
     Then a 200 http response will be returned by the Prophecy resource
     And a prophecy list with 2 elements should be returned in the response body
     And the following prophecies will be returned in the response body
-      | prophetCode                          | prophecyTimestamp       | summary            | description            |
+      | prophetCode                          | prophecyTimestamp       | summary                  | description            |
       | a4f3edc8-e024-4c07-994c-fe6c6e36ee9b | 2020-01-01T10:00:00.555 | Jabba prophecy 1 summary | Prophecy 1 description |
       | a4f3edc8-e024-4c07-994c-fe6c6e36ee9b | 2020-02-01T12:00:00.666 | Jabba prophecy 2 summary | Prophecy 2 description |
 
@@ -53,7 +53,7 @@ Feature: Testing the Prophecy API
     Then a 200 http response will be returned by the Prophecy resource
     And a prophecy list with 1 elements should be returned in the response body
     And the following prophecies will be returned in the response body
-      | prophetCode                          | prophecyTimestamp       | summary            | description            |
+      | prophetCode                          | prophecyTimestamp       | summary                    | description            |
       | ce00e12f-3b38-4f5f-8a21-a0e0b49635e0 | 2020-04-01T12:00:00.666 | Sidious prophecy 2 summary | Prophecy 2 description |
 
   Scenario: Retrieve all Prophecies a Prophet made after a specific time
@@ -61,7 +61,7 @@ Feature: Testing the Prophecy API
     Then a 200 http response will be returned by the Prophecy resource
     And a prophecy list with 2 elements should be returned in the response body
     And the following prophecies will be returned in the response body
-      | prophetCode                          | prophecyTimestamp       | summary            | description            |
+      | prophetCode                          | prophecyTimestamp       | summary                    | description            |
       | f0fa9988-b2f2-47a6-a8e7-e00f560b2307 | 2020-04-01T12:00:00.666 | Qui Gon prophecy 2 summary | Prophecy 2 description |
       | f0fa9988-b2f2-47a6-a8e7-e00f560b2307 | 2020-04-01T15:00:00.777 | Qui Gon prophecy 3 summary | Prophecy 3 description |
 
@@ -70,7 +70,7 @@ Feature: Testing the Prophecy API
     Then a 200 http response will be returned by the Prophecy resource
     And a prophecy list with 2 elements should be returned in the response body
     And the following prophecies will be returned in the response body
-      | prophetCode                          | prophecyTimestamp       | summary            | description            |
+      | prophetCode                          | prophecyTimestamp       | summary                    | description            |
       | f1f040d2-cc83-4dba-8625-93a653b2a490 | 2020-04-01T10:00:00.555 | Jar Jar prophecy 1 summary | Prophecy 1 description |
       | f1f040d2-cc83-4dba-8625-93a653b2a490 | 2020-04-01T12:00:00.666 | Jar Jar prophecy 2 summary | Prophecy 2 description |
 

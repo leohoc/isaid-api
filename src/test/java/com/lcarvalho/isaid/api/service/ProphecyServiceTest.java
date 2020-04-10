@@ -82,6 +82,7 @@ class ProphecyServiceTest {
         String summary = "Prophecy summary";
         String description = "Prophecy description";
         ProphecyDTO prophecyDTO = new ProphecyDTO(summary, description);
+        when(prophetService.retrieveProphetBy(eq(prophetLogin))).thenThrow(new InvalidParameterException());
 
         // When Then
         assertThrows(
@@ -97,98 +98,7 @@ class ProphecyServiceTest {
         String summary = "Prophecy summary";
         String description = "Prophecy description";
         ProphecyDTO prophecyDTO = new ProphecyDTO(summary, description);
-
-        // When Then
-        assertThrows(
-                InvalidParameterException.class,
-                () -> prophecyService.createProphecy(prophetLogin, prophecyDTO));
-    }
-
-    @Test
-    public void testCreateProphecyWithEmptySummary() throws InvalidParameterException, ProphetNotFoundException {
-
-        // Given
-        String prophetLogin = "lorgana";
-        String summary = "";
-        String description = "Prophecy description";
-        ProphecyDTO prophecyDTO = new ProphecyDTO(summary, description);
-
-        // When Then
-        assertThrows(
-                InvalidParameterException.class,
-                () -> prophecyService.createProphecy(prophetLogin, prophecyDTO));
-    }
-
-    @Test
-    public void testCreateProphecyWithNullSummary() throws InvalidParameterException, ProphetNotFoundException {
-
-        // Given
-        String prophetLogin = "lorgana";
-        String summary = null;
-        String description = "Prophecy description";
-        ProphecyDTO prophecyDTO = new ProphecyDTO(summary, description);
-
-        // When Then
-        assertThrows(
-                InvalidParameterException.class,
-                () -> prophecyService.createProphecy(prophetLogin, prophecyDTO));
-    }
-
-    @Test
-    public void testCreateProphecyWithLenghtySummary() throws InvalidParameterException, ProphetNotFoundException {
-
-        // Given
-        String prophetLogin = "lorgana";
-        String summary = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi tincidunt metus sit amet elit bibendum euismod. Curabitur rutrum lacinia amet.";
-        String description = "Prophecy description";
-        ProphecyDTO prophecyDTO = new ProphecyDTO(summary, description);
-
-        // When Then
-        assertThrows(
-                InvalidParameterException.class,
-                () -> prophecyService.createProphecy(prophetLogin, prophecyDTO));
-    }
-
-    @Test
-    public void testCreateProphecyWithEmptyDescription() throws InvalidParameterException, ProphetNotFoundException {
-
-        // Given
-        String prophetLogin = "lorgana";
-        String summary = "Prophecy summary";
-        String description = "";
-        ProphecyDTO prophecyDTO = new ProphecyDTO(summary, description);
-
-        // When Then
-        assertThrows(
-                InvalidParameterException.class,
-                () -> prophecyService.createProphecy(prophetLogin, prophecyDTO));
-    }
-
-    @Test
-    public void testCreateProphecyWithNullDescription() throws InvalidParameterException, ProphetNotFoundException {
-
-        // Given
-        String prophetLogin = "lorgana";
-        String summary = "Prophecy summary";
-        String description = null;
-        ProphecyDTO prophecyDTO = new ProphecyDTO(summary, description);
-
-        // When Then
-        assertThrows(
-                InvalidParameterException.class,
-                () -> prophecyService.createProphecy(prophetLogin, prophecyDTO));
-    }
-
-    @Test
-    public void testCreateProphecyWithLenghtyDescription() throws InvalidParameterException, ProphetNotFoundException {
-
-        // Given
-        String prophetLogin = "lorgana";
-        String summary = "Prophecy summary";
-        String description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec accumsan imperdiet neque, in pellentesque " +
-                                "turpis suscipit id. Sed a pharetra nulla, vel porta ipsum. Integer nec nibh magna. Nunc interdum consectetur aliquet. " +
-                                "Maecenas gravida commodo lectus non rutrum. Nam cras amet. ";
-        ProphecyDTO prophecyDTO = new ProphecyDTO(summary, description);
+        when(prophetService.retrieveProphetBy(eq(prophetLogin))).thenThrow(new InvalidParameterException());
 
         // When Then
         assertThrows(

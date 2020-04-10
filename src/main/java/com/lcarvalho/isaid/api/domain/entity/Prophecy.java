@@ -1,6 +1,7 @@
 package com.lcarvalho.isaid.api.domain.entity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.lcarvalho.isaid.api.domain.dto.ProphecyDTO;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
@@ -9,8 +10,6 @@ import java.util.Objects;
 
 @DynamoDBTable(tableName = "Prophecy")
 public class Prophecy {
-
-    private static final ZoneId SAO_PAULO_ZONE_ID = ZoneId.of("America/Sao_Paulo");
 
     @Id
     private ProphecyId prophecyId;
@@ -23,10 +22,10 @@ public class Prophecy {
         this.prophecyId = prophecyId;
     }
 
-    public Prophecy(String prophetCode, String summary, String description) {
-        this.prophecyId = new ProphecyId(prophetCode, LocalDateTime.now(SAO_PAULO_ZONE_ID));
-        this.summary = summary;
-        this.description = description;
+    public Prophecy(ProphecyDTO prophecyDTO) {
+        this.prophecyId = new ProphecyId(prophecyDTO.getProphetCode(), prophecyDTO.getProphecyTimestamp());
+        this.summary = prophecyDTO.getSummary();
+        this.description = prophecyDTO.getDescription();
     }
 
     public Prophecy(String prophetCode, LocalDateTime prophecyTimestamp, String summary, String description) {
