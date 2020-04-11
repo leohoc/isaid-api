@@ -1,7 +1,6 @@
 package com.lcarvalho.isaid.api.application.resource;
 
-import com.lcarvalho.isaid.api.domain.dto.ProphecyDTO;
-import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.domain.dto.ProphecyRequest;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.api.domain.entity.Prophecy;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
@@ -34,38 +33,37 @@ class ProphecyResourceTest {
     private ProphecyResource prophecyResource;
 
     @Test
-    public void testCreateProphecy() throws ProphetNotFoundException, InvalidParameterException {
+    public void testCreateProphecy() throws ProphetNotFoundException {
 
         // Given
         String prophetLogin = "hsolo";
         String summary = "Prophecy summary";
         String description = "Prophecy description";
-        ProphecyDTO expectedProphecy = buildProphecy(summary, description);
+        ProphecyRequest prophecyRequest = buildProphecyRequest(summary, description);
+        Prophecy expectedProphecy = buildProphecy(summary, description);
 
-        when(prophecyService.createProphecy(eq(prophetLogin), any(ProphecyDTO.class))).thenReturn(expectedProphecy);
+        when(prophecyService.createProphecy(eq(prophetLogin), eq(prophecyRequest))).thenReturn(expectedProphecy);
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new ProphecyDTO(summary, description));
+        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, prophecyRequest);
 
         // Then
         assertEquals(HttpStatus.OK, actualResponseEntity.getStatusCode());
-        assertEquals(expectedProphecy.getProphetCode(), ((ProphecyDTO)actualResponseEntity.getBody()).getProphetCode());
-        assertEquals(expectedProphecy.getSummary(), ((ProphecyDTO)actualResponseEntity.getBody()).getSummary());
-        assertEquals(expectedProphecy.getDescription(), ((ProphecyDTO)actualResponseEntity.getBody()).getDescription());
+        assertEquals(expectedProphecy.getProphetCode(), ((Prophecy)actualResponseEntity.getBody()).getProphetCode());
+        assertEquals(expectedProphecy.getSummary(), ((Prophecy)actualResponseEntity.getBody()).getSummary());
+        assertEquals(expectedProphecy.getDescription(), ((Prophecy)actualResponseEntity.getBody()).getDescription());
     }
 
     @Test
-    public void testCreateProphecyWithInvalidParameter() throws ProphetNotFoundException, InvalidParameterException {
+    public void testCreateProphecyWithEmptyLogin() {
 
         // Given
-        String prophetLogin = "hsolo";
-        String summary = null;
-        String description = null;
-
-        when(prophecyService.createProphecy(eq(prophetLogin), any(ProphecyDTO.class))).thenThrow(new InvalidParameterException());
+        String prophetLogin = "";
+        String summary = "Prophecy summary";
+        String description = "Prophecy description";
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new ProphecyDTO(summary, description));
+        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, buildProphecyRequest(summary, description));
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, actualResponseEntity.getStatusCode());
@@ -73,17 +71,50 @@ class ProphecyResourceTest {
     }
 
     @Test
-    public void testCreateProphecyWithNonexistentProphetLogin() throws ProphetNotFoundException, InvalidParameterException {
+    public void testCreateProphecyWithNullLogin() {
+
+        // Given
+        String prophetLogin = null;
+        String summary = "Prophecy summary";
+        String description = "Prophecy description";
+
+        // When
+        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, buildProphecyRequest(summary, description));
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, actualResponseEntity.getStatusCode());
+        assertNull(actualResponseEntity.getBody());
+    }
+
+    @Test
+    public void testCreateProphecyWithInvalidParameter() {
+
+        // Given
+        String prophetLogin = "hsolo";
+        String summary = null;
+        String description = null;
+
+        // When
+        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, buildProphecyRequest(summary, description));
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, actualResponseEntity.getStatusCode());
+        assertNull(actualResponseEntity.getBody());
+    }
+
+    @Test
+    public void testCreateProphecyWithNonexistentProphetLogin() throws ProphetNotFoundException {
 
         // Given
         String prophetLogin = "kj12i31i2u3h98y";
         String summary = "Prophecy summary";
         String description = "Prophecy description";
+        ProphecyRequest prophecyRequest = buildProphecyRequest(summary, description);
 
-        when(prophecyService.createProphecy(eq(prophetLogin), any(ProphecyDTO.class))).thenThrow(new ProphetNotFoundException());
+        when(prophecyService.createProphecy(eq(prophetLogin), eq(prophecyRequest))).thenThrow(new ProphetNotFoundException());
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, new ProphecyDTO(summary, description));
+        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, prophecyRequest);
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, actualResponseEntity.getStatusCode());
@@ -91,13 +122,13 @@ class ProphecyResourceTest {
     }
 
     @Test
-    public void testGetAllPropheciesOfAProphet() throws InvalidParameterException, ProphetNotFoundException {
+    public void testGetAllPropheciesOfAProphet() throws ProphetNotFoundException {
 
         // Given
         Prophet prophet = buildProphet();
         LocalDateTime startDateTime = null;
         LocalDateTime endDateTime = null;
-        List<ProphecyDTO> expectedProphecies = buildProphecies(prophet, 1);
+        List<Prophecy> expectedProphecies = buildProphecies(prophet, 1);
 
         when(prophecyService
                 .retrievePropheciesBy(eq(prophet.getLogin()), eq(startDateTime), eq(endDateTime)))
@@ -110,20 +141,20 @@ class ProphecyResourceTest {
         // Then
         assertEquals(HttpStatus.OK, actualResponseEntity.getStatusCode());
         assertEquals(expectedProphecies.size(), actualProphecies.size());
-        for (ProphecyDTO expectedProphecy : expectedProphecies) {
+        for (Prophecy expectedProphecy : expectedProphecies) {
             assertTrue(actualProphecies.contains(expectedProphecy));
         }
     }
 
     @Test
-    public void testGetAllPropheciesOfAProphetWithinATimeRange() throws InvalidParameterException, ProphetNotFoundException {
+    public void testGetAllPropheciesOfAProphetWithinATimeRange() throws ProphetNotFoundException {
 
         // Given
         Prophet prophet = buildProphet();
         LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
         LocalDateTime endDateTime = startDateTime.plusDays(1);
 
-        List<ProphecyDTO> expectedProphecies = buildProphecies(prophet, 3);
+        List<Prophecy> expectedProphecies = buildProphecies(prophet, 3);
 
         when(prophecyService
                 .retrievePropheciesBy(eq(prophet.getLogin()), eq(startDateTime), eq(endDateTime)))
@@ -136,22 +167,18 @@ class ProphecyResourceTest {
         // Then
         assertEquals(HttpStatus.OK, actualResponseEntity.getStatusCode());
         assertEquals(expectedProphecies.size(), actualProphecies.size());
-        for (ProphecyDTO expectedProphecy : expectedProphecies) {
+        for (Prophecy expectedProphecy : expectedProphecies) {
             assertTrue(actualProphecies.contains(expectedProphecy));
         }
     }
 
     @Test
-    public void testGetAllPropheciesOfAProphetWithInvalidLogin() throws InvalidParameterException, ProphetNotFoundException {
+    public void testGetAllPropheciesOfAProphetWithInvalidLogin() {
 
         // Given
         String prophetLogin = "";
         LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
         LocalDateTime endDateTime = startDateTime.plusDays(1);
-
-        when(prophecyService
-                .retrievePropheciesBy(eq(prophetLogin), eq(startDateTime), eq(endDateTime)))
-                .thenThrow(new InvalidParameterException());
 
         // When
         ResponseEntity actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, startDateTime, endDateTime);
@@ -161,7 +188,7 @@ class ProphecyResourceTest {
     }
 
     @Test
-    public void testGetAllPropheciesOfANonexistentProphet() throws InvalidParameterException, ProphetNotFoundException {
+    public void testGetAllPropheciesOfANonexistentProphet() throws ProphetNotFoundException {
 
         // Given
         String prophetLogin = "as0d0ad8n0as8da";
@@ -179,8 +206,15 @@ class ProphecyResourceTest {
         assertEquals(HttpStatus.NOT_FOUND, actualResponseEntity.getStatusCode());
     }
 
-    private ProphecyDTO buildProphecy(String summary, String description) {
-        return new ProphecyDTO(PROPHET_CODE, LocalDateTime.now(), summary, description);
+    private ProphecyRequest buildProphecyRequest(final String summary, final String description) {
+        ProphecyRequest prophecyRequest = new ProphecyRequest();
+        prophecyRequest.setSummary(summary);
+        prophecyRequest.setDescription(description);
+        return prophecyRequest;
+    }
+
+    private Prophecy buildProphecy(final String summary, final String description) {
+        return new Prophecy(PROPHET_CODE, LocalDateTime.now(), summary, description);
     }
 
     private Prophet buildProphet() {
@@ -189,14 +223,14 @@ class ProphecyResourceTest {
         return new Prophet(login, prophetCode);
     }
 
-    private List<ProphecyDTO> buildProphecies(Prophet prophet, int size) {
+    private List<Prophecy> buildProphecies(final Prophet prophet, final int size) {
 
-        List<ProphecyDTO> prophecies = new ArrayList<>();
+        List<Prophecy> prophecies = new ArrayList<>();
 
         for (int i = 1; i <= size; i++) {
             String summary = String.format("Prophecy %s summary", i);
             String description = String.format("Prophecy %s description", i);
-            prophecies.add(new ProphecyDTO(prophet.getProphetCode(), LocalDateTime.now(), summary, description));
+            prophecies.add(new Prophecy(prophet.getProphetCode(), LocalDateTime.now(), summary, description));
         }
         return prophecies;
     }

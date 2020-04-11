@@ -3,6 +3,10 @@ package com.lcarvalho.isaid.api.domain.entity;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.google.common.annotations.VisibleForTesting;
+import com.lcarvalho.isaid.api.domain.dto.ProphetRequest;
+
+import java.util.UUID;
 
 @DynamoDBTable(tableName = "Prophet")
 public class Prophet {
@@ -13,7 +17,13 @@ public class Prophet {
 
     public Prophet() {}
 
-    public Prophet(String login, String prophetCode) {
+    public Prophet(final ProphetRequest prophetRequest) {
+        this.login = prophetRequest.getLogin();
+        this.prophetCode = UUID.randomUUID().toString();
+    }
+
+    @VisibleForTesting
+    public Prophet(final String login, final String prophetCode) {
         this.login = login;
         this.prophetCode = prophetCode;
     }

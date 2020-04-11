@@ -1,6 +1,7 @@
 package com.lcarvalho.isaid.api.application.resource;
 
-import com.lcarvalho.isaid.api.domain.dto.FollowerDTO;
+import com.lcarvalho.isaid.api.domain.dto.FollowerRequest;
+import com.lcarvalho.isaid.api.domain.entity.Follower;
 import com.lcarvalho.isaid.api.service.FollowerService;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
@@ -24,13 +25,15 @@ public class FollowerResource {
 
     @PostMapping(value = "/prophets/{login}/followers", consumes = "application/json")
     public ResponseEntity createFollower(@PathVariable("login") String login,
-                                         @RequestBody FollowerDTO requestFollower) {
+                                         @RequestBody FollowerRequest followerRequest) {
 
-        LOGGER.info("m=createFollower, login={}, followerCode={}", login, requestFollower.getFollowerCode());
+        LOGGER.info("m=createFollower, login={}, followerCode={}", login, followerRequest.getFollowerCode());
 
         try {
-            FollowerDTO followerDTO = followerService.createFollower(login, requestFollower);
-            return new ResponseEntity(followerDTO, HttpStatus.OK);
+
+            followerRequest.validate();
+            Follower follower = followerService.createFollower(login, followerRequest);
+            return new ResponseEntity(follower, HttpStatus.OK);
 
         } catch (InvalidParameterException e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);

@@ -1,10 +1,12 @@
 package com.lcarvalho.isaid.api.domain.entity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.lcarvalho.isaid.api.domain.dto.FollowerRequest;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 
 @DynamoDBTable(tableName = "Follower")
 public class Follower {
@@ -17,8 +19,8 @@ public class Follower {
 
     public Follower() {}
 
-    public Follower(String followerCode, String prophetCode) {
-        this.followerId = new FollowerId(followerCode, LocalDateTime.now(SAO_PAULO_ZONE_ID));
+    public Follower(final String prophetCode, final FollowerRequest followerRequest) {
+        this.followerId = new FollowerId(followerRequest.getFollowerCode(), LocalDateTime.now(SAO_PAULO_ZONE_ID));
         this.prophetCode = prophetCode;
     }
 
@@ -54,5 +56,19 @@ public class Follower {
 
     public void setProphetCode(String prophetCode) {
         this.prophetCode = prophetCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Follower follower = (Follower) o;
+        return Objects.equals(followerId.getFollowerCode(), follower.followerId.getFollowerCode()) &&
+                Objects.equals(prophetCode, follower.prophetCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(followerId.getFollowerCode(), prophetCode);
     }
 }

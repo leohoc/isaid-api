@@ -1,7 +1,6 @@
 package com.lcarvalho.isaid.stepdefs;
 
 import com.lcarvalho.isaid.api.application.resource.ProphecyResource;
-import com.lcarvalho.isaid.api.domain.dto.ProphecyDTO;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphecyRepository;
 import com.lcarvalho.isaid.api.domain.entity.Prophecy;
 import com.lcarvalho.isaid.api.service.ProphecyService;
@@ -11,8 +10,6 @@ import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,18 +38,18 @@ public class ProphecyResourceStepDefs {
     private ResponseEntity actualResponseEntity;
 
     @Given("the following prophecies exists:")
-    public void createProphecies(List<Prophecy> prophecies) {
+    public void createProphecies(final List<Prophecy> prophecies) {
         prophecyRepository.saveAll(prophecies);
     }
 
     @When("clients makes a POST request to the Prophecy resource with {string} uri and {string} in the body")
-    public void postRequestToProphecy(String uri, String jsonBodyRequest) {
-        actualResponseEntity = httpClient.post(uri, jsonBodyRequest, ProphecyDTO.class);
+    public void postRequestToProphecy(final String uri, final String jsonBodyRequest) {
+        actualResponseEntity = httpClient.post(uri, jsonBodyRequest, Prophecy.class);
     }
 
     @When("clients makes a GET request to the Prophecy resource with {string} uri")
-    public void getProphecies(String uri) {
-        actualResponseEntity = httpClient.get(uri, ProphecyDTO[].class);
+    public void getProphecies(final String uri) {
+        actualResponseEntity = httpClient.get(uri, Prophecy[].class);
     }
 
     @Then("a {int} http response will be returned by the Prophecy resource")
@@ -83,28 +80,21 @@ public class ProphecyResourceStepDefs {
     @Then("{word} a prophecy list with {int} elements should be returned in the response body")
     public void assertResponseBodyProphecyListSize(final String verifyResponseBody, final Integer expectedSize) {
         if (Boolean.valueOf(verifyResponseBody)) {
-            List<ProphecyDTO> actualProphecies = Arrays.asList((ProphecyDTO[])actualResponseEntity.getBody());
+            List<Prophecy> actualProphecies = Arrays.asList((Prophecy[])actualResponseEntity.getBody());
             assertEquals(expectedSize.intValue(), actualProphecies.size());
         }
     }
 
     @Then("the following prophecies will be returned in the response body")
-    public void assertResponseBodyProphecies(List<ProphecyDTO> expectedProphecies) {
-        List<ProphecyDTO> actualProphecies = Arrays.asList((ProphecyDTO[])actualResponseEntity.getBody());
+    public void assertResponseBodyProphecies(final List<Prophecy> expectedProphecies) {
+        List<Prophecy> actualProphecies = Arrays.asList((Prophecy[])actualResponseEntity.getBody());
         assertEquals(expectedProphecies, actualProphecies);
     }
 
     @DataTableType
-    public List<Prophecy> getProphecies(DataTable table) {
+    public List<Prophecy> getProphecies(final DataTable table) {
         return table.asMaps().stream()
                 .map(m -> new Prophecy(m.get("prophetCode"), LocalDateTime.parse(m.get("prophecyTimestamp")), m.get("summary"), m.get("description")))
-                .collect(Collectors.toList());
-    }
-
-    @DataTableType
-    public List<ProphecyDTO> getProphecyDTOList(DataTable table) {
-        return table.asMaps().stream()
-                .map(m -> new ProphecyDTO(m.get("prophetCode"), LocalDateTime.parse(m.get("prophecyTimestamp")), m.get("summary"), m.get("description")))
                 .collect(Collectors.toList());
     }
 }

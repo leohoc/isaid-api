@@ -1,11 +1,10 @@
 package com.lcarvalho.isaid.api.application.resource;
 
-import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
-import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.domain.dto.ProphetRequest;
+import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.service.ProphetService;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,10 +30,10 @@ class ProphetResourceTest {
     private ProphetResource prophetResource;
 
     @Test
-    public void testGetProphet() throws InvalidParameterException, ProphetNotFoundException {
+    public void testGetProphet() throws ProphetNotFoundException {
 
         // Given
-        ProphetDTO expectedProphet = buildProphet();
+        Prophet expectedProphet = buildProphet();
         ResponseEntity expectedResponseEntity = new ResponseEntity(expectedProphet, HttpStatus.OK);
         Mockito.when(prophetService.retrieveProphetBy(Mockito.eq(LOGIN))).thenReturn(expectedProphet);
 
@@ -46,12 +45,11 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testGetProphetByInvalidLoginParameter() throws InvalidParameterException, ProphetNotFoundException {
+    public void testGetProphetByInvalidLoginParameter() {
 
         // Given
         String login = null;
         ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.BAD_REQUEST);
-        Mockito.when(prophetService.retrieveProphetBy(Mockito.isNull())).thenThrow(new InvalidParameterException());
 
         // When
         ResponseEntity actualResponseEntity = prophetResource.getProphet(login);
@@ -61,7 +59,7 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testGetProphetByInexistentLogin() throws InvalidParameterException, ProphetNotFoundException {
+    public void testGetProphetByInexistentLogin() throws ProphetNotFoundException {
 
         // Given
         ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -75,50 +73,57 @@ class ProphetResourceTest {
     }
 
     @Test
-    public void testCreateProphet() throws ProphetAlreadyExistsException, InvalidParameterException {
+    public void testCreateProphet() throws ProphetAlreadyExistsException {
 
         // Given
-        ProphetDTO expectedProphet = buildProphet();
+        ProphetRequest prophetRequest = buildProphetRequest(LOGIN);
+        Prophet expectedProphet = new Prophet(prophetRequest);
         ResponseEntity expectedResponseEntity = new ResponseEntity(expectedProphet, HttpStatus.OK);
-        Mockito.when(prophetService.createProphet(Mockito.eq(LOGIN))).thenReturn(expectedProphet);
+        Mockito.when(prophetService.createProphet(Mockito.eq(prophetRequest))).thenReturn(expectedProphet);
 
         // When
-        ResponseEntity actualResponseEntity = prophetResource.createProphet(new ProphetDTO(LOGIN));
+        ResponseEntity actualResponseEntity = prophetResource.createProphet(prophetRequest);
 
         // Then
         assertEquals(expectedResponseEntity, actualResponseEntity);
     }
 
     @Test
-    public void testCreateProphetWithInvalidLoginParameter() throws ProphetAlreadyExistsException, InvalidParameterException {
+    public void testCreateProphetWithInvalidLoginParameter() {
 
         // Given
-        String login = "";
+        ProphetRequest prophetRequest = buildProphetRequest(null);
         ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.BAD_REQUEST);
-        Mockito.when(prophetService.createProphet(Mockito.eq(Strings.EMPTY))).thenThrow(new InvalidParameterException());
 
         // When
-        ResponseEntity actualResponseEntity = prophetResource.createProphet(new ProphetDTO(login));
+        ResponseEntity actualResponseEntity = prophetResource.createProphet(prophetRequest);
 
         // Then
         assertEquals(expectedResponseEntity, actualResponseEntity);
     }
 
     @Test
-    public void testCreateAlreadyExistentProphet() throws ProphetAlreadyExistsException, InvalidParameterException {
+    public void testCreateAlreadyExistentProphet() throws ProphetAlreadyExistsException {
 
         // Given
+        ProphetRequest prophetRequest = buildProphetRequest(LOGIN);
         ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.CONFLICT);
-        Mockito.when(prophetService.createProphet(Mockito.eq(LOGIN))).thenThrow(new ProphetAlreadyExistsException());
+        Mockito.when(prophetService.createProphet(Mockito.eq(prophetRequest))).thenThrow(new ProphetAlreadyExistsException());
 
         // When
-        ResponseEntity actualResponseEntity = prophetResource.createProphet(new ProphetDTO(LOGIN));
+        ResponseEntity actualResponseEntity = prophetResource.createProphet(prophetRequest);
 
         // Then
         assertEquals(expectedResponseEntity, actualResponseEntity);
     }
 
-    private ProphetDTO buildProphet() {
-        return new ProphetDTO(LOGIN, UUID.randomUUID().toString());
+    private Prophet buildProphet() {
+        return new Prophet(LOGIN, UUID.randomUUID().toString());
+    }
+
+    private ProphetRequest buildProphetRequest(final String login) {
+        ProphetRequest prophetRequest = new ProphetRequest();
+        prophetRequest.setLogin(login);
+        return prophetRequest;
     }
 }

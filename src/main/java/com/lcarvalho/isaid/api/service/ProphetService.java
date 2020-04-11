@@ -1,55 +1,34 @@
 package com.lcarvalho.isaid.api.service;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
-import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.domain.dto.ProphetRequest;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.UUID;
 
 @Service
 public class ProphetService {
 
-    private static final String INVALID_LOGIN_EXCEPTION_MESSAGE = "login cannot be null or an empty string";
-
     @Autowired
     private ProphetRepository prophetRepository;
 
-    public ProphetDTO createProphet(String login) throws ProphetAlreadyExistsException, InvalidParameterException {
-        validate(login);
-        if (prophetRepository.findByLogin(login) != null) {
+    public Prophet createProphet(final ProphetRequest prophetRequest) throws ProphetAlreadyExistsException {
+
+        if (prophetRepository.findByLogin(prophetRequest.getLogin()) != null) {
             throw new ProphetAlreadyExistsException();
         }
-        Prophet prophet = prophetRepository.save(new Prophet(login, UUID.randomUUID().toString()));
-        return new ProphetDTO(prophet);
+
+        return prophetRepository.save(new Prophet(prophetRequest));
     }
 
-    @VisibleForTesting
-    public Prophet createProphet(String login, String prophetCode) throws InvalidParameterException {
-        validate(login);
-        return prophetRepository.save(new Prophet(login, prophetCode));
-    }
-
-    public ProphetDTO retrieveProphetBy(String login) throws InvalidParameterException, ProphetNotFoundException {
-
-        validate(login);
+    public Prophet retrieveProphetBy(final String login) throws ProphetNotFoundException {
 
         Prophet prophet = prophetRepository.findByLogin(login);
         if (prophet == null) {
             throw new ProphetNotFoundException();
         }
-        return new ProphetDTO(prophet);
-    }
-
-    private void validate(String login) throws InvalidParameterException {
-        if (StringUtils.isEmpty(login)) {
-            throw new InvalidParameterException(INVALID_LOGIN_EXCEPTION_MESSAGE);
-        }
+        return prophet;
     }
 }

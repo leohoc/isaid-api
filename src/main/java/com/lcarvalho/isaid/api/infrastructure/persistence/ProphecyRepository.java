@@ -10,8 +10,8 @@ import java.util.List;
 
 @EnableScan
 public interface ProphecyRepository extends CrudRepository<Prophecy, ProphecyId> {
-    List<Prophecy> findByProphetCode(String prophetCode);
-    List<Prophecy> findByProphetCodeAndProphecyTimestampBetween(String prophetCode, LocalDateTime startDateTime, LocalDateTime endDateTime);
-    List<Prophecy> findByProphetCodeAndProphecyTimestampGreaterThan(String prophetCode, LocalDateTime startDateTime);
-    List<Prophecy> findByProphetCodeAndProphecyTimestampLessThan(String prophetCode, LocalDateTime endDateTime);
+    List<Prophecy> findByProphetCode(final String prophetCode);
+    List<Prophecy> findByProphetCodeAndProphecyTimestampBetween(final String prophetCode, final LocalDateTime startDateTime, final LocalDateTime endDateTime);
+    List<Prophecy> findByProphetCodeAndProphecyTimestampGreaterThan(final String prophetCode, final LocalDateTime startDateTime);
+    List<Prophecy> findByProphetCodeAndProphecyTimestampLessThan(final String prophetCode, final LocalDateTime endDateTime);
 }

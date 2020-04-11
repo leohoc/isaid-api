@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 
 @EnableScan
 public interface ProphetRepository extends CrudRepository<Prophet, String> {
-    Prophet findByLogin(String login);
+    Prophet findByLogin(final String login);
 }

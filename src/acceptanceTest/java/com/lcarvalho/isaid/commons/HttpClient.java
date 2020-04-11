@@ -27,7 +27,7 @@ public class HttpClient {
         return SERVER_URL + ":" + port;
     }
 
-    public ResponseEntity get(String uri, Class clazz) {
+    public ResponseEntity get(final String uri, final Class clazz) {
         try {
             return restTemplate.getForEntity(getHostEndpoint() + uri, clazz);
         } catch (HttpClientErrorException e) {
@@ -35,7 +35,7 @@ public class HttpClient {
         }
     }
 
-    public ResponseEntity post(String uri, String jsonBodyRequest, Class clazz) {
+    public ResponseEntity post(final String uri, final String jsonBodyRequest, final Class clazz) {
         try {
             return restTemplate.postForEntity(getHostEndpoint() + uri, buildRequest(jsonBodyRequest), clazz);
         } catch (HttpClientErrorException e) {
@@ -43,7 +43,7 @@ public class HttpClient {
         }
     }
 
-    private HttpEntity<String> buildRequest(String jsonBodyRequest) {
+    private HttpEntity<String> buildRequest(final String jsonBodyRequest) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity<String>(jsonBodyRequest, headers);

@@ -1,9 +1,7 @@
 package com.lcarvalho.isaid.stepdefs;
 
-import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
-import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.ProphetService;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.commons.HttpClient;
@@ -36,45 +34,45 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
     private  ResponseEntity actualResponseEntity;
 
     @Given("the following prophets exists:")
-    public void createProphets(List<Prophet> prophetList) {
+    public void createProphets(final List<Prophet> prophetList) {
         prophetRepository.saveAll(prophetList);
     }
 
     @When("clients makes a GET request to the Prophet resource with {string} uri")
-    public void getProphet(String uri) {
-        actualResponseEntity = httpClient.get(uri, ProphetDTO.class);
+    public void getProphet(final String uri) {
+        actualResponseEntity = httpClient.get(uri, Prophet.class);
     }
 
     @When("clients makes a POST request to the Prophet resource with {string} uri and {string} in the body")
-    public void createProphet(String uri, String jsonBodyRequest) {
-        actualResponseEntity = httpClient.post(uri, jsonBodyRequest, ProphetDTO.class);
+    public void createProphet(final String uri, final String jsonBodyRequest) {
+        actualResponseEntity = httpClient.post(uri, jsonBodyRequest, Prophet.class);
     }
 
     @Then("{word} in the body a prophet with {string} as login and {string} as code")
-    public void assertGetProphetResponse(String verifyResponseBody, String expectedLogin, String expectedProphetCode) {
+    public void assertGetProphetResponse(final String verifyResponseBody, final String expectedLogin, final String expectedProphetCode) {
 
         if (Boolean.valueOf(verifyResponseBody)) {
-            assertEquals(expectedLogin, ((ProphetDTO)actualResponseEntity.getBody()).getLogin());
-            assertEquals(expectedProphetCode, ((ProphetDTO)actualResponseEntity.getBody()).getProphetCode());
+            assertEquals(expectedLogin, ((Prophet)actualResponseEntity.getBody()).getLogin());
+            assertEquals(expectedProphetCode, ((Prophet)actualResponseEntity.getBody()).getProphetCode());
         }
     }
 
     @Then("{word} a prophet with login equals to {string} in the database")
-    public void verifyProphetInDatabase(String verifyDatabase, String expectedLogin) throws InvalidParameterException, ProphetNotFoundException {
+    public void verifyProphetInDatabase(final String verifyDatabase, final String expectedLogin) throws ProphetNotFoundException {
         if (Boolean.valueOf(verifyDatabase)) {
-            ProphetDTO expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
+            Prophet expectedProphet = prophetService.retrieveProphetBy(expectedLogin);
             assertNotNull(expectedProphet);
             assertEquals(expectedLogin, expectedProphet.getLogin());
         }
     }
 
     @Then("a {int} http response will be returned by the Prophet resource")
-    public void assertHttpStatusResponse(Integer expectedHttpStatus) {
+    public void assertHttpStatusResponse(final Integer expectedHttpStatus) {
         assertEquals(HttpStatus.valueOf(expectedHttpStatus), actualResponseEntity.getStatusCode());
     }
 
     @DataTableType
-    public List<Prophet> getProphets(DataTable table) {
+    public List<Prophet> getProphets(final DataTable table) {
         return table.asMaps().stream().map(m -> new Prophet(m.get("login"), m.get("prophetCode"))).collect(Collectors.toList());
     }
 }

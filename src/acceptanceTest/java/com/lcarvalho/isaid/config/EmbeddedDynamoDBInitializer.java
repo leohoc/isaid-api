@@ -25,7 +25,7 @@ public class EmbeddedDynamoDBInitializer {
         this.createTables(Prophet.class, Prophecy.class, Follower.class);
     }
 
-    private void createTables(Class... classes) {
+    private void createTables(final Class... classes) {
 
         ListTablesResult tables = amazonDynamoDB.listTables();
 
@@ -43,7 +43,7 @@ public class EmbeddedDynamoDBInitializer {
         }
     }
 
-    private CreateTableRequest buildCreateTableRequest(Class clazz) {
+    private CreateTableRequest buildCreateTableRequest(final Class clazz) {
         DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
         CreateTableRequest tableRequest = dynamoDBMapper.generateCreateTableRequest(clazz);
         tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1000L, 1000L));

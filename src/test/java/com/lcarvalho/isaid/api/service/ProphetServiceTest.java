@@ -1,7 +1,6 @@
 package com.lcarvalho.isaid.api.service;
 
-import com.lcarvalho.isaid.api.domain.dto.ProphetDTO;
-import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
+import com.lcarvalho.isaid.api.domain.dto.ProphetRequest;
 import com.lcarvalho.isaid.api.service.exception.ProphetAlreadyExistsException;
 import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.ProphetRepository;
@@ -10,10 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProphetServiceTest {
@@ -28,99 +27,51 @@ class ProphetServiceTest {
     private ProphetService prophetService;
 
     @Test
-    public void testCreateProphet() throws ProphetAlreadyExistsException, InvalidParameterException {
+    public void testCreateProphet() throws ProphetAlreadyExistsException {
 
         // Given
-        ProphetDTO expectedProphet = buildProphet();
-        Mockito.when(prophetRepository.findByLogin(Mockito.any())).thenReturn(null);
-        Mockito.when(prophetRepository.save(Mockito.any())).thenReturn(convertToProphet(expectedProphet));
+        Prophet expectedProphet = buildProphet();
+        when(prophetRepository.findByLogin(eq(LOGIN))).thenReturn(null);
+        when(prophetRepository.save(any())).thenReturn(expectedProphet);
 
         // When
-        ProphetDTO actualProphet = prophetService.createProphet(LOGIN);
+        Prophet actualProphet = prophetService.createProphet(buildProphetRequest(LOGIN));
 
         // Then
         assertEquals(expectedProphet, actualProphet);
-    }
-
-    @Test
-    public void testCreateProphetWithNullLogin() {
-
-        // Given
-        String login = null;
-
-        // When Then
-        assertThrows(
-                    InvalidParameterException.class,
-                    () -> prophetService.createProphet(login));
-    }
-
-    @Test
-    public void testCreateProphetWithEmptyLogin() {
-
-        // Given
-        String login = "";
-
-        // When Then
-        assertThrows(
-                InvalidParameterException.class,
-                () -> prophetService.createProphet(login));
     }
 
     @Test
     public void testCreateAlreadyExistentProphet() {
 
         // Given
-        Mockito.when(prophetRepository.findByLogin(Mockito.eq(LOGIN))).thenReturn(convertToProphet(buildProphet()));
+        when(prophetRepository.findByLogin(eq(LOGIN))).thenReturn(buildProphet());
 
         // When Then
         assertThrows(
                 ProphetAlreadyExistsException.class,
-                () -> prophetService.createProphet(LOGIN));
+                () -> prophetService.createProphet(buildProphetRequest(LOGIN)));
     }
 
     @Test
-    public void testRetrieveProphet() throws InvalidParameterException, ProphetNotFoundException {
+    public void testRetrieveProphet() throws ProphetNotFoundException {
 
         // Given
-        ProphetDTO expectedProphet = buildProphet();
-        Mockito.when(prophetRepository.findByLogin(Mockito.anyString())).thenReturn(convertToProphet(expectedProphet));
+        Prophet expectedProphet = buildProphet();
+        when(prophetRepository.findByLogin(eq(LOGIN))).thenReturn(expectedProphet);
 
         // When
-        ProphetDTO actualProphet = prophetService.retrieveProphetBy(LOGIN);
+        Prophet actualProphet = prophetService.retrieveProphetBy(LOGIN);
 
         // Then
         assertEquals(expectedProphet, actualProphet);
     }
 
     @Test
-    public void testRetrieveProphetByNullLogin() {
-
-        // Given
-        String login = null;
-
-        // When Then
-        assertThrows(
-                InvalidParameterException.class,
-                () -> prophetService.retrieveProphetBy(login));
-    }
-
-    @Test
-    public void testRetrieveProphetByEmptyLogin() {
-
-        // Given
-        String login = "";
-
-        // When Then
-        assertThrows(
-                InvalidParameterException.class,
-                () -> prophetService.retrieveProphetBy(login));
-    }
-
-    @Test
     public void testRetrieveNonexistentProphet() {
 
         // Given
-        Mockito.when(prophetRepository.findByLogin(Mockito.eq(LOGIN))).thenReturn(null);
+        when(prophetRepository.findByLogin(eq(LOGIN))).thenReturn(null);
 
         // When Then
         assertThrows(
@@ -128,12 +79,13 @@ class ProphetServiceTest {
                 () -> prophetService.retrieveProphetBy(LOGIN));
     }
 
-    private ProphetDTO buildProphet() {
-        return new ProphetDTO(LOGIN, PROPHET_CODE);
+    private Prophet buildProphet() {
+        return new Prophet(LOGIN, PROPHET_CODE);
     }
 
-    private Prophet convertToProphet(ProphetDTO prophetDTO) {
-        return new Prophet(prophetDTO.getLogin(), prophetDTO.getProphetCode());
+    private ProphetRequest buildProphetRequest(final String login) {
+        ProphetRequest prophetRequest = new ProphetRequest();
+        prophetRequest.setLogin(login);
+        return prophetRequest;
     }
-
 }

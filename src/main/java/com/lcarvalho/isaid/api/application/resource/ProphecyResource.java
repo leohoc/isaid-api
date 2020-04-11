@@ -1,6 +1,7 @@
 package com.lcarvalho.isaid.api.application.resource;
 
-import com.lcarvalho.isaid.api.domain.dto.ProphecyDTO;
+import com.lcarvalho.isaid.api.domain.dto.ProphecyRequest;
+import com.lcarvalho.isaid.api.domain.entity.Prophecy;
 import com.lcarvalho.isaid.api.service.exception.InvalidParameterException;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import com.lcarvalho.isaid.api.service.ProphecyService;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.lcarvalho.isaid.api.application.resource.util.ValidationUtils.*;
+
 @RestController
 public class ProphecyResource {
 
@@ -25,13 +28,16 @@ public class ProphecyResource {
 
     @PostMapping(value = "/prophets/{login}/prophecies", consumes = "application/json")
     public ResponseEntity createProphecy(@PathVariable("login") String login,
-                                         @RequestBody ProphecyDTO requestProphecy) {
+                                         @RequestBody ProphecyRequest prophecyRequest) {
 
-        LOGGER.info("m=createProphecy, login={}, summary={}, description={}", login, requestProphecy.getSummary(), requestProphecy.getDescription());
+        LOGGER.info("m=createProphecy, login={}, summary={}, description={}", login, prophecyRequest.getSummary(), prophecyRequest.getDescription());
 
         try {
 
-            ProphecyDTO prophecy = prophecyService.createProphecy(login, requestProphecy);
+            validateLogin(login);
+            prophecyRequest.validate();
+
+            Prophecy prophecy = prophecyService.createProphecy(login, prophecyRequest);
             return new ResponseEntity(prophecy, HttpStatus.OK);
 
         } catch (InvalidParameterException e) {
@@ -50,8 +56,8 @@ public class ProphecyResource {
         LOGGER.info("m=getPropheciesBy, login={}, startDateTime={}, endDateTime={}", login, startDateTime, endDateTime);
 
         try {
-
-            List<ProphecyDTO> prophecies = prophecyService.retrievePropheciesBy(login, startDateTime, endDateTime);
+            validateLogin(login);
+            List<Prophecy> prophecies = prophecyService.retrievePropheciesBy(login, startDateTime, endDateTime);
             return new ResponseEntity(prophecies, HttpStatus.OK);
 
         } catch (InvalidParameterException e) {
