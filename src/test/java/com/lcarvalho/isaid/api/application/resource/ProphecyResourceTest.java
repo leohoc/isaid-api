@@ -55,7 +55,7 @@ class ProphecyResourceTest {
     }
 
     @Test
-    public void testCreateProphecyWithEmptyLogin() {
+    public void testCreateProphecyWithInvalidLogin() {
 
         // Given
         String prophetLogin = "";
@@ -71,23 +71,7 @@ class ProphecyResourceTest {
     }
 
     @Test
-    public void testCreateProphecyWithNullLogin() {
-
-        // Given
-        String prophetLogin = null;
-        String summary = "Prophecy summary";
-        String description = "Prophecy description";
-
-        // When
-        ResponseEntity actualResponseEntity = prophecyResource.createProphecy(prophetLogin, buildProphecyRequest(summary, description));
-
-        // Then
-        assertEquals(HttpStatus.BAD_REQUEST, actualResponseEntity.getStatusCode());
-        assertNull(actualResponseEntity.getBody());
-    }
-
-    @Test
-    public void testCreateProphecyWithInvalidParameter() {
+    public void testCreateProphecyWithInvalidProphecyRequest() {
 
         // Given
         String prophetLogin = "hsolo";

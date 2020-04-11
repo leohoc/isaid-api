@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.lcarvalho.isaid.api.application.resource.util.ValidationUtils.*;
+
 @RestController
 public class FollowerResource {
 
@@ -31,7 +33,9 @@ public class FollowerResource {
 
         try {
 
+            validateLogin(login);
             followerRequest.validate();
+
             Follower follower = followerService.createFollower(login, followerRequest);
             return new ResponseEntity(follower, HttpStatus.OK);
 
