@@ -13,6 +13,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -92,6 +96,73 @@ class FollowerResourceTest {
         assertEquals(expectedResponseEntity, actualResponseEntity);
     }
 
+    @Test
+    public void testRetrieveFollowedProphets() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        List<Follower> expectedFollowers = buildFollowers(prophet, 5);
+        when(followerService.getProphetsFollowedBy(eq(prophet.getLogin()))).thenReturn(expectedFollowers);
+
+        // When
+        ResponseEntity actualResponseEntity = followerResource.getFollowedProphets(prophet.getLogin());
+
+        // Then
+        ResponseEntity expectedResponseEntity = new ResponseEntity(expectedFollowers, HttpStatus.OK);
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
+        assertEquals(((List<Follower>)expectedResponseEntity.getBody()).size(), ((List<Follower>)actualResponseEntity.getBody()).size());
+        for (Follower expectedFollower : (List<Follower>)expectedResponseEntity.getBody()) {
+            assertTrue(((List<Follower>)actualResponseEntity.getBody()).contains(expectedFollower));
+        }
+    }
+
+    @Test
+    public void testRetrieveEmptyFollowedProphets() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        List<Follower> expectedFollowers = new ArrayList<>();
+        when(followerService.getProphetsFollowedBy(eq(prophet.getLogin()))).thenReturn(expectedFollowers);
+
+        // When
+        ResponseEntity actualResponseEntity = followerResource.getFollowedProphets(prophet.getLogin());
+
+        // Then
+        ResponseEntity expectedResponseEntity = new ResponseEntity(expectedFollowers, HttpStatus.OK);
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
+        assertEquals(((List<Follower>)expectedResponseEntity.getBody()).size(), ((List<Follower>)actualResponseEntity.getBody()).size());
+    }
+
+    @Test
+    public void testRetrieveFollowedProphetsWithInvalidLogin() {
+
+        // Given
+        Prophet prophet = buildProphet(null, PROPHET_CODE);
+
+        // When
+        ResponseEntity actualResponseEntity = followerResource.getFollowedProphets(prophet.getLogin());
+
+        // Then
+        ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.BAD_REQUEST);
+        assertEquals(expectedResponseEntity, actualResponseEntity);
+    }
+
+    @Test
+    public void testRetrieveFollowedProphetsWithNonexistentLogin() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        List<Follower> expectedFollowers = new ArrayList<>();
+        when(followerService.getProphetsFollowedBy(eq(prophet.getLogin()))).thenThrow(new ProphetNotFoundException());
+
+        // When
+        ResponseEntity actualResponseEntity = followerResource.getFollowedProphets(prophet.getLogin());
+
+        // Then
+        ResponseEntity expectedResponseEntity = new ResponseEntity(expectedFollowers, HttpStatus.NOT_FOUND);
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
+    }
+
     private Prophet buildProphet(final String prophetLogin, final String prophetCode) {
         return new Prophet(prophetLogin, prophetCode);
     }
@@ -100,5 +171,13 @@ class FollowerResourceTest {
         FollowerRequest followerRequest = new FollowerRequest();
         followerRequest.setFollowerCode(followerCode);
         return followerRequest;
+    }
+
+    private List<Follower> buildFollowers(final Prophet prophet, final Integer size) {
+        List<Follower> followers = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            followers.add(new Follower(UUID.randomUUID().toString(), prophet.getProphetCode()));
+        }
+        return followers;
     }
 }

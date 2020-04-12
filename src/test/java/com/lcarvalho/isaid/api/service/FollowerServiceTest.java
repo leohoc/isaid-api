@@ -11,6 +11,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -59,6 +63,38 @@ class FollowerServiceTest {
         assertThrows(ProphetNotFoundException.class, () -> followerService.createFollower(prophet.getLogin(), followerRequest));
     }
 
+    @Test
+    public void testRetrieveProphetsFollowedByLogin() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        List<Follower> expectedFollowers = buildFollowers(prophet, 5);
+        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
+        when(followerRepository.findByFollowerCode(prophet.getProphetCode())).thenReturn(expectedFollowers);
+
+        // When
+        List<Follower> actualFollowers = followerService.getProphetsFollowedBy(prophet.getLogin());
+
+        // Then
+        assertEquals(expectedFollowers.size(), actualFollowers.size());
+        for (Follower expectedFollower : expectedFollowers) {
+            assertTrue(actualFollowers.contains(expectedFollower));
+        }
+    }
+
+    @Test
+    public void testRetrieveProphetsFollowedByNonexistentLogin() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenThrow(new ProphetNotFoundException());
+
+        // When Then
+        assertThrows(
+                ProphetNotFoundException.class,
+                () -> followerService.getProphetsFollowedBy(prophet.getLogin()));
+    }
+
     private FollowerRequest buildFollowerRequest(final String followerCode) {
         FollowerRequest followerRequest = new FollowerRequest();
         followerRequest.setFollowerCode(followerCode);
@@ -69,5 +105,12 @@ class FollowerServiceTest {
         return new Prophet(login, prophetCode);
     }
 
+    private List<Follower> buildFollowers(final Prophet prophet, final Integer size) {
+        List<Follower> followers = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            followers.add(new Follower(UUID.randomUUID().toString(), prophet.getProphetCode()));
+        }
+        return followers;
+    }
 
 }
