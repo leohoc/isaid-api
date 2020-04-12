@@ -27,8 +27,8 @@ public class ProphecyResource {
     private ProphecyService prophecyService;
 
     @PostMapping(value = "/prophets/{login}/prophecies", consumes = "application/json")
-    public ResponseEntity createProphecy(@PathVariable("login") String login,
-                                         @RequestBody ProphecyRequest prophecyRequest) {
+    public ResponseEntity createProphecy(@PathVariable("login") final String login,
+                                         @RequestBody final ProphecyRequest prophecyRequest) {
 
         LOGGER.info("m=createProphecy, login={}, summary={}, description={}", login, prophecyRequest.getSummary(), prophecyRequest.getDescription());
 

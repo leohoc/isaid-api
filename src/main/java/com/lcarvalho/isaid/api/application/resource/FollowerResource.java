@@ -10,10 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.lcarvalho.isaid.api.application.resource.util.ValidationUtils.*;
 
@@ -26,8 +25,8 @@ public class FollowerResource {
     private FollowerService followerService;
 
     @PostMapping(value = "/prophets/{login}/followers", consumes = "application/json")
-    public ResponseEntity createFollower(@PathVariable("login") String login,
-                                         @RequestBody FollowerRequest followerRequest) {
+    public ResponseEntity createFollower(@PathVariable("login") final String login,
+                                         @RequestBody final FollowerRequest followerRequest) {
 
         LOGGER.info("m=createFollower, login={}, followerCode={}", login, followerRequest.getFollowerCode());
 
@@ -38,6 +37,26 @@ public class FollowerResource {
 
             Follower follower = followerService.createFollower(login, followerRequest);
             return new ResponseEntity(follower, HttpStatus.OK);
+
+        } catch (InvalidParameterException e) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+        } catch (ProphetNotFoundException e) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/prophets/{login}/followedProphets")
+    public ResponseEntity getFollowedProphets(@PathVariable("login") final String login) {
+
+        LOGGER.info("m=getFollowedProphets, login={}", login);
+
+        try {
+
+            validateLogin(login);
+
+            List<Follower> followedProphets = followerService.getProphetsFollowedBy(login);
+            return new ResponseEntity(followedProphets, HttpStatus.OK);
 
         } catch (InvalidParameterException e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);

@@ -72,7 +72,9 @@ public class ProphetResourceStepDefs extends SpringAcceptanceTest {
     }
 
     @DataTableType
-    public List<Prophet> getProphets(final DataTable table) {
-        return table.asMaps().stream().map(m -> new Prophet(m.get("login"), m.get("prophetCode"))).collect(Collectors.toList());
+    public List<Prophet> convertToProphetList(final DataTable table) {
+        return table.asMaps().stream()
+                .map(m -> new Prophet(m.get("login"), m.get("prophetCode")))
+                .collect(Collectors.toList());
     }
 }

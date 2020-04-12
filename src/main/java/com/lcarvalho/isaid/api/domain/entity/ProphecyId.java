@@ -3,7 +3,7 @@ package com.lcarvalho.isaid.api.domain.entity;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
+import com.lcarvalho.isaid.api.domain.entity.converter.LocalDateTimeConverter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -37,17 +37,6 @@ public class ProphecyId {
 
     public void setProphecyTimestamp(LocalDateTime prophecyTimestamp) {
         this.prophecyTimestamp = prophecyTimestamp;
-    }
-
-    static public class LocalDateTimeConverter implements DynamoDBTypeConverter<String, LocalDateTime> {
-        @Override
-        public String convert(final LocalDateTime time) {
-            return time.toString();
-        }
-        @Override
-        public LocalDateTime unconvert(final String stringValue) {
-            return LocalDateTime.parse(stringValue);
-        }
     }
 
     @Override

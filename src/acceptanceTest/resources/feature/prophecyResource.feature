@@ -74,7 +74,7 @@ Feature: Testing the Prophecy API
       | f1f040d2-cc83-4dba-8625-93a653b2a490 | 2020-04-01T10:00:00.555 | Jar Jar prophecy 1 summary | Prophecy 1 description |
       | f1f040d2-cc83-4dba-8625-93a653b2a490 | 2020-04-01T12:00:00.666 | Jar Jar prophecy 2 summary | Prophecy 2 description |
 
-  Scenario Outline: Retrieving Prophecies Errors
+  Scenario Outline: Retrieving Prophecies Corner Cases
     When clients makes a GET request to the Prophecy resource with "/prophets/<login>/prophecies" uri
     Then a <httpResponseCode> http response will be returned by the Prophecy resource
     And <shouldVerify> a prophecy list with <responseSize> elements should be returned in the response body

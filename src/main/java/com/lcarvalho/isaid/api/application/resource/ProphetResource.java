@@ -24,7 +24,7 @@ public class ProphetResource {
     ProphetService prophetService;
 
     @GetMapping("/prophets/{login}")
-    public ResponseEntity getProphet(@PathVariable(value = "login") String login) {
+    public ResponseEntity getProphet(@PathVariable(value = "login") final String login) {
 
         LOGGER.info("m=getProphet, login={}", login);
         try {
@@ -42,7 +42,7 @@ public class ProphetResource {
     }
 
     @PostMapping(value = "/prophets", consumes = "application/json")
-    public ResponseEntity createProphet(@RequestBody ProphetRequest prophetRequest) {
+    public ResponseEntity createProphet(@RequestBody final ProphetRequest prophetRequest) {
 
         LOGGER.info("m=createProphet, login={}", prophetRequest.getLogin());
 

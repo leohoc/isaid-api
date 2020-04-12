@@ -92,7 +92,7 @@ public class ProphecyResourceStepDefs {
     }
 
     @DataTableType
-    public List<Prophecy> getProphecies(final DataTable table) {
+    public List<Prophecy> convertToProphecyList(final DataTable table) {
         return table.asMaps().stream()
                 .map(m -> new Prophecy(m.get("prophetCode"), LocalDateTime.parse(m.get("prophecyTimestamp")), m.get("summary"), m.get("description")))
                 .collect(Collectors.toList());

@@ -8,6 +8,8 @@ import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class FollowerService {
 
@@ -21,5 +23,11 @@ public class FollowerService {
 
         Prophet prophet = prophetService.retrieveProphetBy(prophetLogin);
         return followerRepository.save(new Follower(prophet.getProphetCode(), followerRequest));
+    }
+
+    public List<Follower> getProphetsFollowedBy(String login) throws ProphetNotFoundException {
+
+        Prophet prophet = prophetService.retrieveProphetBy(login);
+        return followerRepository.findByFollowerCode(prophet.getProphetCode());
     }
 }

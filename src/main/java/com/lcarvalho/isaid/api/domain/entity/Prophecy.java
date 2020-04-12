@@ -3,6 +3,7 @@ package com.lcarvalho.isaid.api.domain.entity;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.google.common.annotations.VisibleForTesting;
 import com.lcarvalho.isaid.api.domain.dto.ProphecyRequest;
+import com.lcarvalho.isaid.api.domain.entity.converter.LocalDateTimeConverter;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
@@ -51,7 +52,7 @@ public class Prophecy {
     }
 
     @DynamoDBRangeKey(attributeName = "prophecyTimestamp")
-    @DynamoDBTypeConverted(converter = ProphecyId.LocalDateTimeConverter.class)
+    @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
     public LocalDateTime getProphecyTimestamp() {
         return prophecyId != null ? prophecyId.getProphecyTimestamp() : null;
     }

@@ -1,7 +1,9 @@
 package com.lcarvalho.isaid.api.domain.entity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.google.common.annotations.VisibleForTesting;
 import com.lcarvalho.isaid.api.domain.dto.FollowerRequest;
+import com.lcarvalho.isaid.api.domain.entity.converter.LocalDateTimeConverter;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
@@ -15,13 +17,19 @@ public class Follower {
 
     @Id
     private FollowerId followerId;
-    private String prophetCode;
+    private LocalDateTime eventTimestamp;
 
     public Follower() {}
 
     public Follower(final String prophetCode, final FollowerRequest followerRequest) {
-        this.followerId = new FollowerId(followerRequest.getFollowerCode(), LocalDateTime.now(SAO_PAULO_ZONE_ID));
-        this.prophetCode = prophetCode;
+        this.followerId = new FollowerId(followerRequest.getFollowerCode(), prophetCode);
+        this.eventTimestamp = LocalDateTime.now(SAO_PAULO_ZONE_ID);
+    }
+
+    @VisibleForTesting
+    public Follower(final String followerCode, final String prophetCode) {
+        this.followerId = new FollowerId(followerCode, prophetCode);
+        this.eventTimestamp = LocalDateTime.now(SAO_PAULO_ZONE_ID);
     }
 
     @DynamoDBHashKey(attributeName = "followerCode")
@@ -36,26 +44,25 @@ public class Follower {
         this.followerId.setFollowerCode(followerCode);
     }
 
-    @DynamoDBRangeKey(attributeName = "eventTimestamp")
-    @DynamoDBTypeConverted(converter = FollowerId.LocalDateTimeConverter.class)
-    public LocalDateTime getEventTimestamp() {
-        return followerId != null ? followerId.getEventTimestamp() : null;
-    }
-
-    public void setEventTimestamp(LocalDateTime eventTimestamp) {
-        if (followerId == null) {
-            followerId = new FollowerId();
-        }
-        this.followerId.setEventTimestamp(eventTimestamp);
-    }
-
-    @DynamoDBAttribute
+    @DynamoDBRangeKey(attributeName = "prophetCode")
     public String getProphetCode() {
-        return prophetCode;
+        return followerId != null ? followerId.getProphetCode() : null;
     }
 
     public void setProphetCode(String prophetCode) {
-        this.prophetCode = prophetCode;
+        if (followerId == null) {
+            followerId = new FollowerId();
+        }
+        this.followerId.setProphetCode(prophetCode);
+    }
+
+    @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
+    public LocalDateTime getEventTimestamp() {
+        return eventTimestamp;
+    }
+
+    public void setEventTimestamp(LocalDateTime eventTimestamp) {
+        this.eventTimestamp = eventTimestamp;
     }
 
     @Override
@@ -63,12 +70,11 @@ public class Follower {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Follower follower = (Follower) o;
-        return Objects.equals(followerId.getFollowerCode(), follower.followerId.getFollowerCode()) &&
-                Objects.equals(prophetCode, follower.prophetCode);
+        return followerId.equals(follower.followerId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(followerId.getFollowerCode(), prophetCode);
+        return Objects.hash(followerId);
     }
 }
