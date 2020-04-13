@@ -95,6 +95,38 @@ class FollowerServiceTest {
                 () -> followerService.getProphetsFollowedBy(prophet.getLogin()));
     }
 
+    @Test
+    public void testRetrieveProphetFollowers() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        List<Follower> expectedFollowers = buildFollowers(prophet, 5);
+        when(prophetService.retrieveProphetBy(prophet.getLogin())).thenReturn(prophet);
+        when(followerRepository.findByProphetCode(eq(prophet.getProphetCode()))).thenReturn(expectedFollowers);
+
+        // When
+        List<Follower> actualFollowers = followerService.getProphetFollowers(prophet.getLogin());
+
+        // Then
+        assertEquals(expectedFollowers.size(), actualFollowers.size());
+        for (Follower expectedFollower : expectedFollowers) {
+            assertTrue(actualFollowers.contains(expectedFollower));
+        }
+    }
+
+    @Test
+    public void testRetrieveProphetFollowersWithNonexistentLogin() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        when(prophetService.retrieveProphetBy(prophet.getLogin())).thenThrow(new ProphetNotFoundException());
+
+        // When Then
+        assertThrows(
+                ProphetNotFoundException.class,
+                () -> followerService.getProphetFollowers(prophet.getLogin()));
+    }
+
     private FollowerRequest buildFollowerRequest(final String followerCode) {
         FollowerRequest followerRequest = new FollowerRequest();
         followerRequest.setFollowerCode(followerCode);
@@ -112,5 +144,4 @@ class FollowerServiceTest {
         }
         return followers;
     }
-
 }

@@ -163,6 +163,55 @@ class FollowerResourceTest {
         assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
     }
 
+    @Test
+    public void testRetrieveProphetFollowers() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        List<Follower> expectedFollowers = buildFollowers(prophet, 5);
+        when(followerService.getProphetFollowers(eq(prophet.getLogin()))).thenReturn(expectedFollowers);
+
+        // When
+        ResponseEntity actualResponseEntity = followerResource.getProphetFollowers(prophet.getLogin());
+
+        // Then
+        ResponseEntity expectedResponseEntity = new ResponseEntity(expectedFollowers, HttpStatus.OK);
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
+        assertEquals(((List<Follower>)expectedResponseEntity.getBody()).size(), ((List<Follower>)actualResponseEntity.getBody()).size());
+        for (Follower expectedFollower : (List<Follower>)expectedResponseEntity.getBody()) {
+            assertTrue(((List<Follower>)actualResponseEntity.getBody()).contains(expectedFollower));
+        }
+    }
+
+    @Test
+    public void testRetrieveProphetFollowersWithInvalidLogin() {
+
+        // Given
+        Prophet prophet = buildProphet(null, PROPHET_CODE);
+
+        // When
+        ResponseEntity actualResponseEntity = followerResource.getProphetFollowers(prophet.getLogin());
+
+        // Then
+        ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.BAD_REQUEST);
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testRetrieveProphetFollowersWithNonexistentLogin() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        when(followerService.getProphetFollowers(eq(prophet.getLogin()))).thenThrow(new ProphetNotFoundException());
+
+        // When
+        ResponseEntity actualResponseEntity = followerResource.getProphetFollowers(prophet.getLogin());
+
+        // Then
+        ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.NOT_FOUND);
+        assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
+    }
+
     private Prophet buildProphet(final String prophetLogin, final String prophetCode) {
         return new Prophet(prophetLogin, prophetCode);
     }

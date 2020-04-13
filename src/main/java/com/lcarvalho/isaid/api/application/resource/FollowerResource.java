@@ -65,4 +65,24 @@ public class FollowerResource {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping(value = "/prophets/{login}/followers")
+    public ResponseEntity getProphetFollowers(@PathVariable("login") final String login) {
+
+        LOGGER.info("m=getProphetFollowers, login={}", login);
+
+        try {
+
+            validateLogin(login);
+
+            List<Follower> followers = followerService.getProphetFollowers(login);
+            return new ResponseEntity(followers, HttpStatus.OK);
+
+        } catch (InvalidParameterException e) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+        } catch (ProphetNotFoundException e) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+    }
 }

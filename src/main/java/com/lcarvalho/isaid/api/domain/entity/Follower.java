@@ -33,6 +33,7 @@ public class Follower {
     }
 
     @DynamoDBHashKey(attributeName = "followerCode")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "ProphetFollowersIndex")
     public String getFollowerCode() {
         return followerId != null ? followerId.getFollowerCode() : null;
     }
@@ -45,6 +46,7 @@ public class Follower {
     }
 
     @DynamoDBRangeKey(attributeName = "prophetCode")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "ProphetFollowersIndex")
     public String getProphetCode() {
         return followerId != null ? followerId.getProphetCode() : null;
     }

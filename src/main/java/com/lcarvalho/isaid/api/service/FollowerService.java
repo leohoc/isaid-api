@@ -30,4 +30,10 @@ public class FollowerService {
         Prophet prophet = prophetService.retrieveProphetBy(login);
         return followerRepository.findByFollowerCode(prophet.getProphetCode());
     }
+
+    public List<Follower> getProphetFollowers(String login) throws ProphetNotFoundException {
+
+        Prophet prophet = prophetService.retrieveProphetBy(login);
+        return followerRepository.findByProphetCode(prophet.getProphetCode());
+    }
 }

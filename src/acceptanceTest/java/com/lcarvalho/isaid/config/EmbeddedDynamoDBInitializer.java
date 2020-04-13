@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
 
+import java.util.List;
+
 @Component
 public class EmbeddedDynamoDBInitializer {
 
@@ -47,6 +49,16 @@ public class EmbeddedDynamoDBInitializer {
         DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
         CreateTableRequest tableRequest = dynamoDBMapper.generateCreateTableRequest(clazz);
         tableRequest.setProvisionedThroughput(new ProvisionedThroughput(1000L, 1000L));
+        addProvisionedThroughputToGlobalSecondaryIndices(tableRequest);
         return tableRequest;
+    }
+
+    private void addProvisionedThroughputToGlobalSecondaryIndices(final CreateTableRequest tableRequest) {
+        List<GlobalSecondaryIndex> globalSecondaryIndices = tableRequest.getGlobalSecondaryIndexes();
+        if (globalSecondaryIndices != null) {
+            for (GlobalSecondaryIndex globalSecondaryIndex : globalSecondaryIndices) {
+                globalSecondaryIndex.setProvisionedThroughput(new ProvisionedThroughput(1000L, 1000L));
+            }
+        }
     }
 }

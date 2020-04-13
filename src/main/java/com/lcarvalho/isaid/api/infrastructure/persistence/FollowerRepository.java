@@ -10,4 +10,5 @@ import java.util.List;
 @EnableScan
 public interface FollowerRepository  extends CrudRepository<Follower, FollowerId> {
     List<Follower> findByFollowerCode(String followerCode);
+    List<Follower> findByProphetCode(String prophetCode);
 }

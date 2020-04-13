@@ -15,6 +15,7 @@ Feature: Testing the Follower API
       | pdameron  | 84b7dbc1-0011-4303-a72a-23f1cc3f1b6e |
       | finn      | deb4dd63-99d2-4ada-ab1c-8827ad223337 |
       | zbliss    | e4e80a70-4570-4b0b-b0d9-8270d7cb66ba |
+      | swexley   | 90548af7-4fba-4c5c-8ad9-805859851456 |
 
     Given the following followers exists:
       | followerCode                         | prophetCode                          |
@@ -64,7 +65,7 @@ Feature: Testing the Follower API
       | e4e80a70-4570-4b0b-b0d9-8270d7cb66ba | deb4dd63-99d2-4ada-ab1c-8827ad223337 |
       | e4e80a70-4570-4b0b-b0d9-8270d7cb66ba | e4e80a70-4570-4b0b-b0d9-8270d7cb66ba |
 
-  Scenario Outline: Listing Prophets Followed by a Prophet Corner Cases
+  Scenario Outline: Retrieving Prophets Followed by a Prophet Corner Cases
     When clients makes a GET request to the Follower resource with "/prophets/<prophetLogin>/followedProphets" uri
     Then a <httpResponseCode> http response will be returned by the Follower resource
     And <shouldVerify> a follower list with <responseSize> elements should be returned in the response body
@@ -72,4 +73,22 @@ Feature: Testing the Follower API
       | prophetLogin       | httpResponseCode | shouldVerify | responseSize |
       | yoda               | 200              | true         | 0            |
       | @invalidLogin      | 400              | false        | 0            |
+      | nonexistentProphet | 404              | false        | 0            |
+
+  Scenario: Retrieving a Prophet Followers
+    When clients makes a GET request to the Follower resource with "/prophets/yoda/followers" uri
+    Then a 200 http response will be returned by the Follower resource
+    And the following followers will be returned in the response body
+      | prophetCode                          | followerCode                         |
+      | dfce2d96-d660-4acb-9dba-cb4e36903606 | f48da9fb-5b97-441c-87f5-49406b2124ee |
+      | dfce2d96-d660-4acb-9dba-cb4e36903606 | e4e80a70-4570-4b0b-b0d9-8270d7cb66ba |
+
+  Scenario Outline: Retrieving a Prophet Followers Corner Cases
+    When clients makes a GET request to the Follower resource with "/prophets/<prophetLogin>/followers" uri
+    Then a <httpResponseCode> http response will be returned by the Follower resource
+    And <shouldVerify> a follower list with <responseSize> elements should be returned in the response body
+    Examples:
+      | prophetLogin       | httpResponseCode | shouldVerify | responseSize |
+      | swexley            | 200              | true         | 0            |
+      | invalid login      | 400              | false        | 0            |
       | nonexistentProphet | 404              | false        | 0            |
