@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FollowerService {
@@ -20,9 +21,9 @@ public class FollowerService {
     private FollowerRepository followerRepository;
 
     public Follower createFollower(final String prophetLogin, final FollowerRequest followerRequest) throws ProphetNotFoundException {
-
+        Prophet followerProphet = prophetService.retrieveProphetBy(UUID.fromString(followerRequest.getFollowerCode()));
         Prophet prophet = prophetService.retrieveProphetBy(prophetLogin);
-        return followerRepository.save(new Follower(prophet.getProphetCode(), followerRequest));
+        return followerRepository.save(new Follower(followerProphet.getProphetCode(), prophet.getProphetCode()));
     }
 
     public List<Follower> getProphetsFollowedBy(String login) throws ProphetNotFoundException {

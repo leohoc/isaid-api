@@ -2,6 +2,7 @@ package com.lcarvalho.isaid.api.domain.entity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.google.common.annotations.VisibleForTesting;
 import com.lcarvalho.isaid.api.domain.dto.ProphetRequest;
@@ -38,6 +39,7 @@ public class Prophet {
     }
 
     @DynamoDBAttribute
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "ProphetCodeIndex")
     public String getProphetCode() {
         return prophetCode;
     }

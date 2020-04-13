@@ -21,12 +21,12 @@ public class Follower {
 
     public Follower() {}
 
+    @VisibleForTesting
     public Follower(final String prophetCode, final FollowerRequest followerRequest) {
         this.followerId = new FollowerId(followerRequest.getFollowerCode(), prophetCode);
         this.eventTimestamp = LocalDateTime.now(SAO_PAULO_ZONE_ID);
     }
 
-    @VisibleForTesting
     public Follower(final String followerCode, final String prophetCode) {
         this.followerId = new FollowerId(followerCode, prophetCode);
         this.eventTimestamp = LocalDateTime.now(SAO_PAULO_ZONE_ID);

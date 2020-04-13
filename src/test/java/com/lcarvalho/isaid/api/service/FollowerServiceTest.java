@@ -23,6 +23,7 @@ class FollowerServiceTest {
 
     private static final String PROPHET_LOGIN = "login";
     private static final String PROPHET_CODE = "66c0dc04-20ba-431a-bf32-61f58df44974";
+    private static final String FOLLOWER_LOGIN = "followerLogin";
     private static final String FOLLOWER_CODE = "7c3132fd-c723-4b2c-a921-d21a3791f7ff";
 
     @Mock
@@ -39,8 +40,12 @@ class FollowerServiceTest {
 
         // Given
         Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
-        FollowerRequest followerRequest = buildFollowerRequest(FOLLOWER_CODE);
-        Follower expectedFollower = new Follower(prophet.getProphetCode(), followerRequest);
+        Prophet followerProphet = buildProphet(FOLLOWER_LOGIN, FOLLOWER_CODE);
+
+        FollowerRequest followerRequest = buildFollowerRequest(followerProphet.getProphetCode());
+        Follower expectedFollower = new Follower(followerProphet.getProphetCode(), prophet.getProphetCode());
+
+        when(prophetService.retrieveProphetBy(eq(UUID.fromString(followerRequest.getFollowerCode())))).thenReturn(followerProphet);
         when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
         when(followerRepository.save(eq(expectedFollower))).thenReturn(expectedFollower);
 
@@ -56,8 +61,26 @@ class FollowerServiceTest {
 
         // Given
         Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
-        FollowerRequest followerRequest = buildFollowerRequest(FOLLOWER_CODE);
+        Prophet followerProphet = buildProphet(FOLLOWER_LOGIN, FOLLOWER_CODE);
+
+        FollowerRequest followerRequest = buildFollowerRequest(followerProphet.getProphetCode());
+
+        when(prophetService.retrieveProphetBy(eq(UUID.fromString(followerRequest.getFollowerCode())))).thenReturn(followerProphet);
         when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenThrow(new ProphetNotFoundException());
+
+        // When Then
+        assertThrows(ProphetNotFoundException.class, () -> followerService.createFollower(prophet.getLogin(), followerRequest));
+    }
+
+    @Test
+    public void testCreateFollowerWithNonexistentFollower() throws ProphetNotFoundException {
+
+        // Given
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        Prophet followerProphet = buildProphet(FOLLOWER_LOGIN, FOLLOWER_CODE);
+
+        FollowerRequest followerRequest = buildFollowerRequest(followerProphet.getProphetCode());
+        when(prophetService.retrieveProphetBy(eq(UUID.fromString(followerRequest.getFollowerCode())))).thenThrow(new ProphetNotFoundException());
 
         // When Then
         assertThrows(ProphetNotFoundException.class, () -> followerService.createFollower(prophet.getLogin(), followerRequest));

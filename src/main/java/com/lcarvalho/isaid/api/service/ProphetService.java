@@ -8,6 +8,8 @@ import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class ProphetService {
 
@@ -26,6 +28,14 @@ public class ProphetService {
     public Prophet retrieveProphetBy(final String login) throws ProphetNotFoundException {
 
         Prophet prophet = prophetRepository.findByLogin(login);
+        if (prophet == null) {
+            throw new ProphetNotFoundException();
+        }
+        return prophet;
+    }
+
+    public Prophet retrieveProphetBy(final UUID prophetCode) throws ProphetNotFoundException {
+        Prophet prophet = prophetRepository.findByProphetCode(prophetCode.toString());
         if (prophet == null) {
             throw new ProphetNotFoundException();
         }

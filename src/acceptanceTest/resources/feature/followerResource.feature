@@ -48,6 +48,7 @@ Feature: Testing the Follower API
       | lcalrissian  | d2645154-dd58-419e-8b1b-bba60654538a | 404              | false        |                                      |
       |              | d2645154-dd58-419e-8b1b-bba60654538a | 405              | false        |                                      |
       | kren         |                                      | 400              | false        |                                      |
+      | rnobody      | 390d917e-9297-4ad6-ae4b-5e443abb8ade | 404              | false        |                                      |
 
   Scenario: Retrieving Prophets Followed by a Prophet
     When clients makes a GET request to the Follower resource with "/prophets/zbliss/followedProphets" uri

@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -77,6 +79,32 @@ class ProphetServiceTest {
         assertThrows(
                 ProphetNotFoundException.class,
                 () -> prophetService.retrieveProphetBy(LOGIN));
+    }
+
+    @Test
+    public void testRetrieveProphetByProphetCode() throws ProphetNotFoundException {
+
+        // Given
+        Prophet expectedProphet = buildProphet();
+        when(prophetRepository.findByProphetCode(eq(PROPHET_CODE))).thenReturn(expectedProphet);
+
+        // When
+        Prophet actualProphet = prophetService.retrieveProphetBy(UUID.fromString(PROPHET_CODE));
+
+        // Then
+        assertEquals(expectedProphet, actualProphet);
+    }
+
+    @Test
+    public void testRetrieveNonexistentProphetByProphetCode() {
+
+        // Given
+        when(prophetRepository.findByProphetCode(eq(PROPHET_CODE))).thenReturn(null);
+
+        // When Then
+        assertThrows(
+                ProphetNotFoundException.class,
+                () -> prophetService.retrieveProphetBy(UUID.fromString(PROPHET_CODE)));
     }
 
     private Prophet buildProphet() {
