@@ -6,6 +6,9 @@ import com.lcarvalho.isaid.api.domain.entity.Prophet;
 import com.lcarvalho.isaid.api.infrastructure.persistence.FollowerRepository;
 import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +16,8 @@ import java.util.UUID;
 
 @Service
 public class FollowerService {
+
+    private static final int PAGE_SIZE = 10;
 
     @Autowired
     private ProphetService prophetService;
@@ -36,5 +41,14 @@ public class FollowerService {
 
         Prophet prophet = prophetService.retrieveProphetBy(login);
         return followerRepository.findByProphetCode(prophet.getProphetCode());
+    }
+
+    public Page<Follower> getProphetFollowers(String login, Integer page) throws ProphetNotFoundException {
+        Prophet prophet = prophetService.retrieveProphetBy(login);
+        return followerRepository.findByProphetCode(prophet.getProphetCode(), buildPageRequest(page));
+    }
+
+    private Pageable buildPageRequest(Integer page) {
+        return PageRequest.of(page, PAGE_SIZE);
     }
 }

@@ -10,6 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -167,15 +170,16 @@ class FollowerResourceTest {
     public void testRetrieveProphetFollowers() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
-        List<Follower> expectedFollowers = buildFollowers(prophet, 5);
-        when(followerService.getProphetFollowers(eq(prophet.getLogin()))).thenReturn(expectedFollowers);
+        Page<Follower> expectedFollowers = buildFollowersPage(prophet, 5);
+        when(followerService.getProphetFollowers(eq(prophet.getLogin()), eq(page))).thenReturn(expectedFollowers);
 
         // When
-        ResponseEntity actualResponseEntity = followerResource.getProphetFollowers(prophet.getLogin());
+        ResponseEntity actualResponseEntity = followerResource.getProphetFollowers(prophet.getLogin(), page);
 
         // Then
-        ResponseEntity expectedResponseEntity = new ResponseEntity(expectedFollowers, HttpStatus.OK);
+        ResponseEntity expectedResponseEntity = new ResponseEntity(expectedFollowers.getContent(), HttpStatus.OK);
         assertEquals(expectedResponseEntity.getStatusCode(), actualResponseEntity.getStatusCode());
         assertEquals(((List<Follower>)expectedResponseEntity.getBody()).size(), ((List<Follower>)actualResponseEntity.getBody()).size());
         for (Follower expectedFollower : (List<Follower>)expectedResponseEntity.getBody()) {
@@ -187,10 +191,11 @@ class FollowerResourceTest {
     public void testRetrieveProphetFollowersWithInvalidLogin() {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet(null, PROPHET_CODE);
 
         // When
-        ResponseEntity actualResponseEntity = followerResource.getProphetFollowers(prophet.getLogin());
+        ResponseEntity actualResponseEntity = followerResource.getProphetFollowers(prophet.getLogin(), page);
 
         // Then
         ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -201,11 +206,12 @@ class FollowerResourceTest {
     public void testRetrieveProphetFollowersWithNonexistentLogin() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
-        when(followerService.getProphetFollowers(eq(prophet.getLogin()))).thenThrow(new ProphetNotFoundException());
+        when(followerService.getProphetFollowers(eq(prophet.getLogin()), eq(page))).thenThrow(new ProphetNotFoundException());
 
         // When
-        ResponseEntity actualResponseEntity = followerResource.getProphetFollowers(prophet.getLogin());
+        ResponseEntity actualResponseEntity = followerResource.getProphetFollowers(prophet.getLogin(), page);
 
         // Then
         ResponseEntity expectedResponseEntity = new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -228,5 +234,9 @@ class FollowerResourceTest {
             followers.add(new Follower(UUID.randomUUID().toString(), prophet.getProphetCode()));
         }
         return followers;
+    }
+
+    private Page<Follower> buildFollowersPage(final Prophet prophet, final Integer size) {
+        return new PageImpl<>(buildFollowers(prophet, size));
     }
 }

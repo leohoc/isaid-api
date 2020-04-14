@@ -8,6 +8,7 @@ import com.lcarvalho.isaid.api.service.exception.ProphetNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import static com.lcarvalho.isaid.api.application.resource.util.ValidationUtils.
 @RestController
 public class FollowerResource {
 
+    private static final Integer DEFAULT_PAGE = 0;
     private static Logger LOGGER = LogManager.getLogger();
 
     @Autowired
@@ -67,16 +69,22 @@ public class FollowerResource {
     }
 
     @GetMapping(value = "/prophets/{login}/followers")
-    public ResponseEntity getProphetFollowers(@PathVariable("login") final String login) {
+    public ResponseEntity getProphetFollowers(@PathVariable("login") final String login,
+                                              @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page) {
 
-        LOGGER.info("m=getProphetFollowers, login={}", login);
+        LOGGER.info("m=getProphetFollowers, login={}, page={}", login, page);
 
         try {
 
             validateLogin(login);
 
-            List<Follower> followers = followerService.getProphetFollowers(login);
-            return new ResponseEntity(followers, HttpStatus.OK);
+            Page<Follower> followers = followerService.getProphetFollowers(login, page);
+
+            if (page > followers.getTotalPages()) {
+                return new ResponseEntity(HttpStatus.METHOD_NOT_ALLOWED);
+            }
+
+            return new ResponseEntity(followers.getContent(), HttpStatus.OK);
 
         } catch (InvalidParameterException e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
