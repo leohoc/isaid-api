@@ -10,6 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,18 +126,19 @@ class FollowerServiceTest {
     public void testRetrieveProphetFollowers() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
-        List<Follower> expectedFollowers = buildFollowers(prophet, 5);
+        Page<Follower> expectedFollowers = buildFollowersPage(prophet, 5);
         when(prophetService.retrieveProphetBy(prophet.getLogin())).thenReturn(prophet);
-        when(followerRepository.findByProphetCode(eq(prophet.getProphetCode()))).thenReturn(expectedFollowers);
+        when(followerRepository.findByProphetCode(eq(prophet.getProphetCode()), any(PageRequest.class))).thenReturn(expectedFollowers);
 
         // When
-        List<Follower> actualFollowers = followerService.getProphetFollowers(prophet.getLogin());
+        Page<Follower> actualFollowers = followerService.getProphetFollowers(prophet.getLogin(), page);
 
         // Then
-        assertEquals(expectedFollowers.size(), actualFollowers.size());
-        for (Follower expectedFollower : expectedFollowers) {
-            assertTrue(actualFollowers.contains(expectedFollower));
+        assertEquals(expectedFollowers.getContent().size(), actualFollowers.getContent().size());
+        for (Follower expectedFollower : expectedFollowers.getContent()) {
+            assertTrue(actualFollowers.getContent().contains(expectedFollower));
         }
     }
 
@@ -141,13 +146,28 @@ class FollowerServiceTest {
     public void testRetrieveProphetFollowersWithNonexistentLogin() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
         when(prophetService.retrieveProphetBy(prophet.getLogin())).thenThrow(new ProphetNotFoundException());
 
         // When Then
         assertThrows(
                 ProphetNotFoundException.class,
-                () -> followerService.getProphetFollowers(prophet.getLogin()));
+                () -> followerService.getProphetFollowers(prophet.getLogin(), page));
+    }
+
+    @Test
+    public void testRetrieveProphetFollowersWithNullPage() throws ProphetNotFoundException {
+
+        // Given
+        Integer page = null;
+        Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
+        when(prophetService.retrieveProphetBy(prophet.getLogin())).thenReturn(prophet);
+
+        // When Then
+        assertThrows(
+                NullPointerException.class,
+                () -> followerService.getProphetFollowers(prophet.getLogin(), page));
     }
 
     private FollowerRequest buildFollowerRequest(final String followerCode) {
@@ -166,5 +186,9 @@ class FollowerServiceTest {
             followers.add(new Follower(UUID.randomUUID().toString(), prophet.getProphetCode()));
         }
         return followers;
+    }
+
+    private Page<Follower> buildFollowersPage(final Prophet prophet, final Integer size) {
+        return new PageImpl<>(buildFollowers(prophet, size));
     }
 }

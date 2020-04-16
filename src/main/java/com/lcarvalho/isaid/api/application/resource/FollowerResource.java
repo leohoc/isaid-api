@@ -79,11 +79,6 @@ public class FollowerResource {
             validateLogin(login);
 
             Page<Follower> followers = followerService.getProphetFollowers(login, page);
-
-            if (page > followers.getTotalPages()) {
-                return new ResponseEntity(HttpStatus.METHOD_NOT_ALLOWED);
-            }
-
             return new ResponseEntity(followers.getContent(), HttpStatus.OK);
 
         } catch (InvalidParameterException e) {

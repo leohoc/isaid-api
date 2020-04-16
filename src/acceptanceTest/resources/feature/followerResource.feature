@@ -128,6 +128,7 @@ Feature: Testing the Follower API
     Examples:
       | prophetLogin       | page | httpResponseCode | shouldVerify | responseSize |
       | swexley            | 0    | 200              | true         | 0            |
-      | yoda               | 2    | 405              | false        | 0            |
+      | yoda               | 2    | 200              | true         | 0            |
+      | r2d2               | 1    | 200              | true         | 0            |
       | invalid login      | 0    | 400              | false        | 0            |
       | nonexistentProphet | 0    | 404              | false        | 0            |

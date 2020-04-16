@@ -31,24 +31,18 @@ public class FollowerService {
         return followerRepository.save(new Follower(followerProphet.getProphetCode(), prophet.getProphetCode()));
     }
 
-    public List<Follower> getProphetsFollowedBy(String login) throws ProphetNotFoundException {
+    public List<Follower> getProphetsFollowedBy(final String login) throws ProphetNotFoundException {
 
         Prophet prophet = prophetService.retrieveProphetBy(login);
         return followerRepository.findByFollowerCode(prophet.getProphetCode());
     }
 
-    public List<Follower> getProphetFollowers(String login) throws ProphetNotFoundException {
-
-        Prophet prophet = prophetService.retrieveProphetBy(login);
-        return followerRepository.findByProphetCode(prophet.getProphetCode());
-    }
-
-    public Page<Follower> getProphetFollowers(String login, Integer page) throws ProphetNotFoundException {
+    public Page<Follower> getProphetFollowers(final String login, final Integer page) throws ProphetNotFoundException {
         Prophet prophet = prophetService.retrieveProphetBy(login);
         return followerRepository.findByProphetCode(prophet.getProphetCode(), buildPageRequest(page));
     }
 
-    private Pageable buildPageRequest(Integer page) {
+    private Pageable buildPageRequest(final Integer page) {
         return PageRequest.of(page, PAGE_SIZE);
     }
 }
