@@ -11,6 +11,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -60,11 +61,11 @@ public class ProphecyResourceStepDefs {
     @Then("{word} the database for a prophecy with {string}, {string} and {string}")
     public void assertProphecyInDatabase(final String searchDatabase, final String expectedProphetCode, final String expectedSummary, final String expectedDescription) {
         if (Boolean.valueOf(searchDatabase)) {
-            List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(expectedProphetCode);
+            Page<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(expectedProphetCode);
 
-            if (actualProphecies != null && actualProphecies.size() > 0) {
+            if (actualProphecies != null && actualProphecies.getContent().size() > 0) {
 
-                Prophecy actualProphecy = actualProphecies.get(0);
+                Prophecy actualProphecy = actualProphecies.getContent().get(0);
                 assertEquals(expectedProphetCode, actualProphecy.getProphetCode());
                 assertEquals(expectedSummary, actualProphecy.getSummary());
                 assertEquals(expectedDescription, actualProphecy.getDescription());

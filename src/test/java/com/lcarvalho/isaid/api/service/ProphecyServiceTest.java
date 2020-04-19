@@ -12,6 +12,9 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -92,21 +95,22 @@ class ProphecyServiceTest {
     public void testRetrieveAllPropheciesOfAProphet() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet("wantilles");
         LocalDateTime startDateTime = null;
         LocalDateTime endDateTime = null;
 
-        List<Prophecy> expectedProphecies = buildProphecies(PROPHET_CODE);
+        Page<Prophecy> expectedProphecies = buildPropheciesPage(PROPHET_CODE);
         when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
-        when(prophecyRepository.findByProphetCode(eq(prophet.getProphetCode()))).thenReturn(expectedProphecies);
+        when(prophecyRepository.findByProphetCode(eq(prophet.getProphetCode()), eq(PageRequest.of(page, 10)))).thenReturn(expectedProphecies);
 
         // When
-        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
+        Page<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime, page);
 
         // Then
-        assertEquals(expectedProphecies.size(), actualProphecies.size());
-        for (Prophecy expectedProphecy : expectedProphecies) {
-            assertTrue(actualProphecies.contains(expectedProphecy));
+        assertEquals(expectedProphecies.getContent().size(), actualProphecies.getContent().size());
+        for (Prophecy expectedProphecy : expectedProphecies.getContent()) {
+            assertTrue(actualProphecies.getContent().contains(expectedProphecy));
         }
     }
 
@@ -114,23 +118,24 @@ class ProphecyServiceTest {
     public void testRetrieveAllPropheciesOfAProphetWithinATimeRange() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet("wantilles");
         LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
         LocalDateTime endDateTime = startDateTime.plusDays(1);
 
-        List<Prophecy> expectedProphecies = buildProphecies(PROPHET_CODE);
+        Page<Prophecy> expectedProphecies = buildPropheciesPage(PROPHET_CODE);
         when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
         when(prophecyRepository
-                .findByProphetCodeAndProphecyTimestampBetween(eq(prophet.getProphetCode()), eq(startDateTime), eq(endDateTime)))
+                .findByProphetCodeAndProphecyTimestampBetween(eq(prophet.getProphetCode()), eq(startDateTime), eq(endDateTime), eq(PageRequest.of(page, 10))))
                 .thenReturn(expectedProphecies);
 
         // When
-        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
+        Page<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime, page);
 
         // Then
-        assertEquals(expectedProphecies.size(), actualProphecies.size());
-        for (Prophecy expectedProphecy : expectedProphecies) {
-            assertTrue(actualProphecies.contains(expectedProphecy));
+        assertEquals(expectedProphecies.getContent().size(), actualProphecies.getContent().size());
+        for (Prophecy expectedProphecy : expectedProphecies.getContent()) {
+            assertTrue(actualProphecies.getContent().contains(expectedProphecy));
         }
     }
 
@@ -138,23 +143,24 @@ class ProphecyServiceTest {
     public void testRetrieveAllPropheciesOfAProphetAfterASpecificTime() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet("wantilles");
         LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
         LocalDateTime endDateTime = null;
 
-        List<Prophecy> expectedProphecies = buildProphecies(PROPHET_CODE);
+        Page<Prophecy> expectedProphecies = buildPropheciesPage(PROPHET_CODE);
         when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
         when(prophecyRepository
-                .findByProphetCodeAndProphecyTimestampGreaterThan(eq(prophet.getProphetCode()), eq(startDateTime)))
+                .findByProphetCodeAndProphecyTimestampGreaterThan(eq(prophet.getProphetCode()), eq(startDateTime), eq(PageRequest.of(page, 10))))
                 .thenReturn(expectedProphecies);
 
         // When
-        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
+        Page<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime, page);
 
         // Then
-        assertEquals(expectedProphecies.size(), actualProphecies.size());
-        for (Prophecy expectedProphecy : expectedProphecies) {
-            assertTrue(actualProphecies.contains(expectedProphecy));
+        assertEquals(expectedProphecies.getContent().size(), actualProphecies.getContent().size());
+        for (Prophecy expectedProphecy : expectedProphecies.getContent()) {
+            assertTrue(actualProphecies.getContent().contains(expectedProphecy));
         }
     }
 
@@ -162,23 +168,24 @@ class ProphecyServiceTest {
     public void testRetrieveAllPropheciesOfAProphetBeforeASpecificTime() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet("wantilles");
         LocalDateTime startDateTime = null;
         LocalDateTime endDateTime = LocalDate.now().atStartOfDay().plusDays(1);
 
-        List<Prophecy> expectedProphecies = buildProphecies(PROPHET_CODE);
+        Page<Prophecy> expectedProphecies = buildPropheciesPage(PROPHET_CODE);
         when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
         when(prophecyRepository
-                .findByProphetCodeAndProphecyTimestampLessThan(eq(prophet.getProphetCode()), eq(endDateTime)))
+                .findByProphetCodeAndProphecyTimestampLessThan(eq(prophet.getProphetCode()), eq(endDateTime), eq(PageRequest.of(page, 10))))
                 .thenReturn(expectedProphecies);
 
         // When
-        List<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
+        Page<Prophecy> actualProphecies = prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime, page);
 
         // Then
-        assertEquals(expectedProphecies.size(), actualProphecies.size());
-        for (Prophecy expectedProphecy : expectedProphecies) {
-            assertTrue(actualProphecies.contains(expectedProphecy));
+        assertEquals(expectedProphecies.getContent().size(), actualProphecies.getContent().size());
+        for (Prophecy expectedProphecy : expectedProphecies.getContent()) {
+            assertTrue(actualProphecies.getContent().contains(expectedProphecy));
         }
     }
 
@@ -186,6 +193,7 @@ class ProphecyServiceTest {
     public void testRetrieveAllPropheciesOfANonexistentProphet() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet("sdkfsdf07sd89f7s");
         LocalDateTime startDateTime = null;
         LocalDateTime endDateTime = null;
@@ -195,7 +203,7 @@ class ProphecyServiceTest {
         // When Then
         assertThrows(
                 ProphetNotFoundException.class,
-                () -> prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime));
+                () -> prophecyService.retrievePropheciesBy(prophet.getLogin(), startDateTime, endDateTime, page));
     }
 
     private List<Prophecy> buildProphecies(String prophetCode) {
@@ -204,6 +212,10 @@ class ProphecyServiceTest {
         prophecies.add(buildProphecy(prophetCode, "Prophecy summary 2", "Prophecy summary 2"));
         prophecies.add(buildProphecy(prophetCode, "Prophecy summary 3", "Prophecy summary 3"));
         return prophecies;
+    }
+
+    private Page<Prophecy> buildPropheciesPage(final String prophetCode) {
+        return new PageImpl<>(buildProphecies(prophetCode));
     }
 
     private Prophet buildProphet(String login) {

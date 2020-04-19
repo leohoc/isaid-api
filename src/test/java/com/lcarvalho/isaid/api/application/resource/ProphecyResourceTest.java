@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -109,23 +111,24 @@ class ProphecyResourceTest {
     public void testGetAllPropheciesOfAProphet() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet();
         LocalDateTime startDateTime = null;
         LocalDateTime endDateTime = null;
-        List<Prophecy> expectedProphecies = buildProphecies(prophet, 1);
+        Page<Prophecy> expectedProphecies = buildPropheciesPage(prophet, 1);
 
         when(prophecyService
-                .retrievePropheciesBy(eq(prophet.getLogin()), eq(startDateTime), eq(endDateTime)))
+                .retrievePropheciesBy(eq(prophet.getLogin()), eq(startDateTime), eq(endDateTime), eq(page)))
                 .thenReturn(expectedProphecies);
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.getPropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
+        ResponseEntity actualResponseEntity = prophecyResource.getPropheciesBy(prophet.getLogin(), startDateTime, endDateTime, page);
         List<Prophecy> actualProphecies = (List<Prophecy>)actualResponseEntity.getBody();
 
         // Then
         assertEquals(HttpStatus.OK, actualResponseEntity.getStatusCode());
-        assertEquals(expectedProphecies.size(), actualProphecies.size());
-        for (Prophecy expectedProphecy : expectedProphecies) {
+        assertEquals(expectedProphecies.getContent().size(), actualProphecies.size());
+        for (Prophecy expectedProphecy : expectedProphecies.getContent()) {
             assertTrue(actualProphecies.contains(expectedProphecy));
         }
     }
@@ -134,24 +137,25 @@ class ProphecyResourceTest {
     public void testGetAllPropheciesOfAProphetWithinATimeRange() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet();
         LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
         LocalDateTime endDateTime = startDateTime.plusDays(1);
 
-        List<Prophecy> expectedProphecies = buildProphecies(prophet, 3);
+        Page<Prophecy> expectedProphecies = buildPropheciesPage(prophet, 3);
 
         when(prophecyService
-                .retrievePropheciesBy(eq(prophet.getLogin()), eq(startDateTime), eq(endDateTime)))
+                .retrievePropheciesBy(eq(prophet.getLogin()), eq(startDateTime), eq(endDateTime), eq(page)))
                 .thenReturn(expectedProphecies);
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.getPropheciesBy(prophet.getLogin(), startDateTime, endDateTime);
+        ResponseEntity actualResponseEntity = prophecyResource.getPropheciesBy(prophet.getLogin(), startDateTime, endDateTime, page);
         List<Prophecy> actualProphecies = (List<Prophecy>)actualResponseEntity.getBody();
 
         // Then
         assertEquals(HttpStatus.OK, actualResponseEntity.getStatusCode());
-        assertEquals(expectedProphecies.size(), actualProphecies.size());
-        for (Prophecy expectedProphecy : expectedProphecies) {
+        assertEquals(expectedProphecies.getContent().size(), actualProphecies.size());
+        for (Prophecy expectedProphecy : expectedProphecies.getContent()) {
             assertTrue(actualProphecies.contains(expectedProphecy));
         }
     }
@@ -160,12 +164,13 @@ class ProphecyResourceTest {
     public void testGetAllPropheciesOfAProphetWithInvalidLogin() {
 
         // Given
+        Integer page = 0;
         String prophetLogin = "";
         LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
         LocalDateTime endDateTime = startDateTime.plusDays(1);
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, startDateTime, endDateTime);
+        ResponseEntity actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, startDateTime, endDateTime, page);
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST, actualResponseEntity.getStatusCode());
@@ -175,16 +180,17 @@ class ProphecyResourceTest {
     public void testGetAllPropheciesOfANonexistentProphet() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         String prophetLogin = "as0d0ad8n0as8da";
         LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
         LocalDateTime endDateTime = startDateTime.plusDays(1);
 
         when(prophecyService
-                .retrievePropheciesBy(eq(prophetLogin), eq(startDateTime), eq(endDateTime)))
+                .retrievePropheciesBy(eq(prophetLogin), eq(startDateTime), eq(endDateTime), eq(page)))
                 .thenThrow(new ProphetNotFoundException());
 
         // When
-        ResponseEntity actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, startDateTime, endDateTime);
+        ResponseEntity actualResponseEntity = prophecyResource.getPropheciesBy(prophetLogin, startDateTime, endDateTime, page);
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND, actualResponseEntity.getStatusCode());
@@ -217,5 +223,9 @@ class ProphecyResourceTest {
             prophecies.add(new Prophecy(prophet.getProphetCode(), LocalDateTime.now(), summary, description));
         }
         return prophecies;
+    }
+
+    private Page<Prophecy> buildPropheciesPage(final Prophet prophet, final int size) {
+        return new PageImpl<>(buildProphecies(prophet, size));
     }
 }

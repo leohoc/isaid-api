@@ -8,13 +8,13 @@ import com.lcarvalho.isaid.api.service.ProphecyService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.lcarvalho.isaid.api.application.resource.util.ValidationUtils.*;
 
@@ -51,14 +51,15 @@ public class ProphecyResource {
     @GetMapping("/prophets/{login}/prophecies")
     public ResponseEntity getPropheciesBy(@PathVariable("login") final String login,
                                           @RequestParam(value = "startDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime startDateTime,
-                                          @RequestParam(value = "endDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime endDateTime) {
+                                          @RequestParam(value = "endDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final LocalDateTime endDateTime,
+                                          @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page) {
 
-        LOGGER.info("m=getPropheciesBy, login={}, startDateTime={}, endDateTime={}", login, startDateTime, endDateTime);
+        LOGGER.info("m=getPropheciesBy, login={}, startDateTime={}, endDateTime={}, page={}", login, startDateTime, endDateTime, page);
 
         try {
             validateLogin(login);
-            List<Prophecy> prophecies = prophecyService.retrievePropheciesBy(login, startDateTime, endDateTime);
-            return new ResponseEntity(prophecies, HttpStatus.OK);
+            Page<Prophecy> prophecies = prophecyService.retrievePropheciesBy(login, startDateTime, endDateTime, page);
+            return new ResponseEntity(prophecies.getContent(), HttpStatus.OK);
 
         } catch (InvalidParameterException e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
