@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,10 +30,10 @@ public class FollowerService {
         return followerRepository.save(new Follower(followerProphet.getProphetCode(), prophet.getProphetCode()));
     }
 
-    public List<Follower> getProphetsFollowedBy(final String login) throws ProphetNotFoundException {
+    public Page<Follower> getProphetsFollowedBy(final String login, final Integer page) throws ProphetNotFoundException {
 
         Prophet prophet = prophetService.retrieveProphetBy(login);
-        return followerRepository.findByFollowerCode(prophet.getProphetCode());
+        return followerRepository.findByFollowerCode(prophet.getProphetCode(), buildPageRequest(page));
     }
 
     public Page<Follower> getProphetFollowers(final String login, final Integer page) throws ProphetNotFoundException {

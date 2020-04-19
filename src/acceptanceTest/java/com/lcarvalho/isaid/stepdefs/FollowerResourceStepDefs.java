@@ -10,6 +10,8 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
@@ -59,8 +61,8 @@ public class FollowerResourceStepDefs {
     @Then("{word} a follower with followerCode equals to {string} and prophetCode equals to {string} in the database")
     public void assertDatabase(final String verify, final String expectedFollowerCode, final String expectedProphetCode) {
         if (Boolean.valueOf(verify)) {
-            List<Follower> actualFollowers = followerRepository.findByFollowerCode(expectedFollowerCode);
-            assertTrue(actualFollowers.contains(buildFollower(expectedFollowerCode, expectedProphetCode)));
+            Page<Follower> actualFollowers = followerRepository.findByFollowerCode(expectedFollowerCode, PageRequest.of(0, 10));
+            assertTrue(actualFollowers.getContent().contains(buildFollower(expectedFollowerCode, expectedProphetCode)));
         }
     }
 

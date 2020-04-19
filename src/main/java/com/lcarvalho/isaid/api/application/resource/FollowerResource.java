@@ -13,14 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 import static com.lcarvalho.isaid.api.application.resource.util.ValidationUtils.*;
 
 @RestController
 public class FollowerResource {
 
-    private static final Integer DEFAULT_PAGE = 0;
     private static Logger LOGGER = LogManager.getLogger();
 
     @Autowired
@@ -49,16 +46,17 @@ public class FollowerResource {
     }
 
     @GetMapping(value = "/prophets/{login}/followedProphets")
-    public ResponseEntity getFollowedProphets(@PathVariable("login") final String login) {
+    public ResponseEntity getFollowedProphets(@PathVariable("login") final String login,
+                                              @RequestParam(value = "page", required = false, defaultValue = "0") final Integer page) {
 
-        LOGGER.info("m=getFollowedProphets, login={}", login);
+        LOGGER.info("m=getFollowedProphets, login={}, page={}", login, page);
 
         try {
 
             validateLogin(login);
 
-            List<Follower> followedProphets = followerService.getProphetsFollowedBy(login);
-            return new ResponseEntity(followedProphets, HttpStatus.OK);
+            Page<Follower> followedProphets = followerService.getProphetsFollowedBy(login, page);
+            return new ResponseEntity(followedProphets.getContent(), HttpStatus.OK);
 
         } catch (InvalidParameterException e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);

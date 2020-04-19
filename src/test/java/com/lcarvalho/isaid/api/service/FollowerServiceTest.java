@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,18 +93,19 @@ class FollowerServiceTest {
     public void testRetrieveProphetsFollowedByLogin() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
-        List<Follower> expectedFollowers = buildFollowers(prophet, 5);
+        Page<Follower> expectedFollowers = buildFollowersPage(prophet, 5);
         when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenReturn(prophet);
-        when(followerRepository.findByFollowerCode(prophet.getProphetCode())).thenReturn(expectedFollowers);
+        when(followerRepository.findByFollowerCode(eq(prophet.getProphetCode()), eq(PageRequest.of(page, 10)))).thenReturn(expectedFollowers);
 
         // When
-        List<Follower> actualFollowers = followerService.getProphetsFollowedBy(prophet.getLogin());
+        Page<Follower> actualFollowers = followerService.getProphetsFollowedBy(prophet.getLogin(), page);
 
         // Then
-        assertEquals(expectedFollowers.size(), actualFollowers.size());
-        for (Follower expectedFollower : expectedFollowers) {
-            assertTrue(actualFollowers.contains(expectedFollower));
+        assertEquals(expectedFollowers.getContent().size(), actualFollowers.getContent().size());
+        for (Follower expectedFollower : expectedFollowers.getContent()) {
+            assertTrue(actualFollowers.getContent().contains(expectedFollower));
         }
     }
 
@@ -113,13 +113,14 @@ class FollowerServiceTest {
     public void testRetrieveProphetsFollowedByNonexistentLogin() throws ProphetNotFoundException {
 
         // Given
+        Integer page = 0;
         Prophet prophet = buildProphet(PROPHET_LOGIN, PROPHET_CODE);
         when(prophetService.retrieveProphetBy(eq(prophet.getLogin()))).thenThrow(new ProphetNotFoundException());
 
         // When Then
         assertThrows(
                 ProphetNotFoundException.class,
-                () -> followerService.getProphetsFollowedBy(prophet.getLogin()));
+                () -> followerService.getProphetsFollowedBy(prophet.getLogin(), page));
     }
 
     @Test
